@@ -30,6 +30,19 @@ void is_doubling(t_stack s)
     }
 }
 
+void is_doubling_indexed(t_indexed_stack s)
+{
+    int i;
+
+    i = 0;
+    while (i < s.top)
+    {
+        if (s.tab[i].value == s.tab[s.top].value)
+        error("Error");
+        i++;
+    }
+}
+
 int is_valid_instruction(char *instr)
 {
     if (ft_strcmp(instr, "sa") && ft_strcmp(instr, "sb") && ft_strcmp(instr, "ss") && ft_strcmp(instr, "pa") && ft_strcmp(instr, "pb") && ft_strcmp(instr, "ra") && ft_strcmp(instr, "rb") && ft_strcmp(instr, "rr") && ft_strcmp(instr, "rra") && ft_strcmp(instr, "rrb") && ft_strcmp(instr, "rrr"))
