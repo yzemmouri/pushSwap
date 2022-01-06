@@ -16,65 +16,59 @@ int is_sorted_indexed_array(t_indexed_value *a, int n)
         is_sorted_indexed_array(a, n - 1);
 }
 
-void merge(t_indexed_value *stack, int l, int m, int r, int by_val)
+void init_tools_merge(t_merge_tools *t, t_merge_tools val)
 {
-    t_merge_tools t;
-    t_indexed_value L[m - l + 1];
-    t_indexed_value R[r - m];
+    t->i = val.i;
+    t->j = val.j;
+    t->k = val.k;
+    t->n1 = val.n1;
+    t->n2 = val.n2;
+}
 
-    t.n1 = m - l + 1;
-    t.n2 = r - m;
-    t.i = -1;
-    t.j = -1;
-    while (++t.i < t.n1)
-        L[t.i] = stack[l + t.i];
-    while (++t.j < t.n2)
-        R[t.j] = stack[m + 1 + t.j];
-    t.i = 0;
-    t.j = 0;
-    t.k = l;
-    while (t.i < t.n1 && t.j < t.n2)
-    {
-        if(by_val)
-        {
-            if (L[t.i].value <= R[t.j].value)
-            {
-                stack[t.k] = L[t.i];
-                t.i++;
-            }
-            else
-            {
-                stack[t.k] = R[t.j];
-                t.j++;
-            }
-        }
-        else
-        {
-            if (L[t.i].index <= R[t.j].index)
-            {
-                stack[t.k] = L[t.i];
-                t.i++;
-            }
-            else
-            {
-                stack[t.k] = R[t.j];
-                t.j++;
-            }
-        }
-        t.k++;
-    }
+void merge_insert(t_indexed_value *stack,t_merge_tools t, t_indexed_value *l, t_indexed_value *r)
+{
     while (t.i < t.n1)
     {
-        stack[t.k] = L[t.i];
+        stack[t.k] = l[t.i];
         t.i++;
         t.k++;
     }
     while (t.j < t.n2)
     {
-        stack[t.k] = R[t.j];
+        stack[t.k] = r[t.j];
         t.j++;
         t.k++;
     }
+}
+
+void merge(t_indexed_value *stack, int left, int m, int right, int by_val)
+{
+    t_merge_tools t;
+    t_indexed_value l[m - left + 1];
+    t_indexed_value r[right - m];
+
+    init_tools_merge(&t, (t_merge_tools){-1, -1, left, m - left + 1, right - m});
+    while (++t.i < t.n1)
+        l[t.i] = stack[left + t.i];
+    while (++t.j < t.n2)
+        r[t.j] = stack[m + 1 + t.j];
+    t.i = 0;
+    t.j = 0;
+    while (t.i < t.n1 && t.j < t.n2)
+    {
+        if(by_val)
+        {
+            stack[t.k] = l[t.i].value <= r[t.j].value ? l[t.i] : r[t.j];
+            l[t.i].value <= r[t.j].value ? t.i++ : t.j++;
+        }
+        else
+        {
+            stack[t.k] = l[t.i].index <= r[t.j].index ? l[t.i] : r[t.j];
+            l[t.i].index <= r[t.j].index ? t.i++ : t.j++;
+        }
+        t.k++;
+    }
+    merge_insert(stack, t, l, r);
 }
 
 void mergeSort(t_indexed_value *stack, int l, int r, int by_val)

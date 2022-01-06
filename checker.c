@@ -44,19 +44,20 @@ int main(int ac, char **av)
         manage_instruction(&a,&b,line);
     }
     
-    // while (a.top >= 0)
-    // {
-    //     printf("%d ", a.tab[a.top]);
-    //     --a.top;
-    // }
-    // printf("\n");
-    // while (b.top >= 0)
-    // {
-    //     printf("%d ", b.tab[b.top]);
-    //     --b.top;
-    // }
+    while (a.top >= 0)
+    {
+        printf("%d ", a.tab[a.top]);
+        --a.top;
+    }
 
-    if (is_valid_sorted_stack(a, b, ac - 2))
+    printf("\n");
+    while (b.top >= 0)
+    {
+        printf("%d ", b.tab[b.top]);
+        --b.top;
+    }
+
+    if (is_valid_sorted_stack(a, b, ac - 1))
         printf("OK\n");
     else
         printf("KO\n");

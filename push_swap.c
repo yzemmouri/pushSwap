@@ -25,16 +25,23 @@ int main(int ac, char **av)
             --i;
         }
     }
- i = 0;
+    i = 0;
     while (i < ac - 1)
     {
         printf("%d-->%d\n", a.tab[i].index, a.tab[i].value);
         ++i;
     }
     printf("\n\n");
+    // printf("--%d--",a.tab[0].value);
     mergeSort(a.tab, 0, ac - 2, 1);
-
+    i=0;
+    while (i < ac - 1)
+    {
+        printf("%d-->%d\n", a.tab[i].index, a.tab[i].value);
+        ++i;
+    }
     i = 0;
+    printf("\n\n");
     while (i < ac - 1)
     {
         a.tab[i].value = i;
@@ -56,13 +63,35 @@ int main(int ac, char **av)
         ++i;
     }
 
-    if (is_sorted_indexed_array(a.tab, ac - 2))
+    if (is_sorted_indexed_array(a.tab, ac - 1))
         return (0);
     else
     {   
         if (ac - 1 == 3)
         {
-
+    
+            if (a.tab[0].value > a.tab[1].value && a.tab[1].value < a.tab[2].value && a.tab[2].value > a.tab[0].value)
+            {
+                printf("sa");
+            }
+            else if (a.tab[0].value > a.tab[1].value && a.tab[1].value > a.tab[2].value && a.tab[2].value < a.tab[0].value)
+            {
+                printf("yyy");
+            }
+            else if (a.tab[0].value > a.tab[1].value && a.tab[1].value < a.tab[2].value && a.tab[2].value < a.tab[0].value)
+            {
+                printf("sss");
+            }
+            else if (a.tab[0].value < a.tab[1].value && a.tab[1].value > a.tab[2].value && a.tab[2].value > a.tab[0].value)
+            {
+                printf("fff");
+                
+            }
+            else
+            {
+                printf("zzz");
+            }
+            
         }
         if (ac - 1 <= 5)
         {
