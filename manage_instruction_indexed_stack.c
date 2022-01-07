@@ -31,12 +31,12 @@ void    px_instr(t_indexed_stack *s1, t_indexed_stack *s2)
     }
 }
 
-void    rot_instr(int *tab, int top, int to_up)
+void    rot_instr(t_indexed_value *tab, int top, int to_up)
 {
     if (top > 0)
     {
         int i;
-        int tmp;
+        t_indexed_value tmp;
         int limit;
 
         i = to_up ? top : 0;
@@ -58,18 +58,18 @@ void    rot_instr(int *tab, int top, int to_up)
     }
 }
 
-void    rot_rot_instr(int *tab1, int *tab2, int top1, int top2, int to_up)
+void    rot_rot_instr(t_indexed_value *tab1, t_indexed_value *tab2, int top1, int top2, int to_up)
 {
     rot_instr(tab1, top1, to_up);
     rot_instr(tab2, top2, to_up);
 }
 
-void    manage_instruction(t_indexed_stack *sa, t_indexed_stack *sb, char *instr)
+void    manage_instruction_indexed_stack(t_indexed_stack *sa, t_indexed_stack *sb, char *instr)
 {
     if (ft_strcmp(instr, "sa") == 0)
         sx_instr(sa);
     else if (ft_strcmp(instr, "sb") == 0)
-         sx_instr(sb);
+        sx_instr(sb);
     else if (ft_strcmp(instr, "ss") == 0)
         ss_instr(sa,sb);
     else if (ft_strcmp(instr, "pa") == 0)

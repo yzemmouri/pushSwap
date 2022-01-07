@@ -45,6 +45,7 @@ int     is_valid_instruction(char *instr);
 void    error(char *msg);
 void    is_int_range(char *number, char min_int[11], char max_int[10]);
 void    manage_instruction(t_stack *sa, t_stack *sb, char *instr);
+void    manage_instruction_indexed_stack(t_indexed_stack *sa, t_indexed_stack *sb, char *instr);
 int     is_sorted_array(int *a, int n);
 int     is_sorted_indexed_array(t_indexed_value *a, int n);
 void    mergeSort(t_indexed_value *stack, int l, int r, int by_val);

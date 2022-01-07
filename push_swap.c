@@ -1,17 +1,34 @@
 #include "push_swap.h"
 
-void    three_num(int a, int b, int c)
+void    three_num(int a, int b, int c, t_indexed_stack *sa, t_indexed_stack *sb)
 {
     if (a > b && b < c && c > a)
+    {
         printf("sa\n");
+        manage_instruction_indexed_stack(sa, sb, "sa");
+    }
     else if (a > b && b > c && c < a)
+    {
         printf("sa\nrra\n");
+        manage_instruction_indexed_stack(sa, sb, "sa");
+        manage_instruction_indexed_stack(sa, sb, "rra");
+    }
     else if (a > b && b < c && c < a)
+    {
         printf("ra\n");
+        manage_instruction_indexed_stack(sa, sb, "ra");
+    }
     else if (a < b && b > c && c > a)
+    {
         printf("sa\nra\n");
+        manage_instruction_indexed_stack(sa, sb, "sa");
+        manage_instruction_indexed_stack(sa, sb, "ra");
+    }
     else
+    {
         printf("rra\n");
+        manage_instruction_indexed_stack(sa, sb, "rra");
+    }
 }
 
 int main(int ac, char **av)
@@ -45,7 +62,7 @@ int main(int ac, char **av)
     //     printf("%d-->%d\n", a.tab[i].index, a.tab[i].value);
     //     ++i;
     // }
-    // printf("\n\n");
+    printf("\n\n");
     // printf("--%d--",a.tab[0].value);
     mergeSort(a.tab, 0, ac - 2, 1);
     // i=0;
@@ -61,7 +78,7 @@ int main(int ac, char **av)
         a.tab[i].value = i;
         ++i;
     }
-    //  i = 0;
+     i = 0;
     // while (i < ac - 1)
     // {
     //     printf("%d-->%d\n", a.tab[i].index, a.tab[i].value);
@@ -83,11 +100,40 @@ int main(int ac, char **av)
     else
     {   
         if (ac - 1 == 3)
-            three_num(a.tab[2].value, a.tab[1].value, a.tab[0].value);
+            three_num(a.tab[2].value, a.tab[1].value, a.tab[0].value, &a, &b);
         else if (ac - 1 <= 5)
         {
-            manage_instruction(&a, &b, "pb");
+            //manage_instruction_indexed_stack(&a, &b, "pb");
+            manage_instruction_indexed_stack(&a, &b, "pb");
+            printf("pb\n");
+            three_num(a.tab[2].value, a.tab[1].value, a.tab[0].value, &a, &b);
+
+            manage_instruction_indexed_stack(&a, &b, "pa");
+            printf("pa\n");
+
+            if (a.tab[a.top].value > a.tab[0].value)
+            {
+                manage_instruction_indexed_stack(&a, &b, "ra");
+                printf("ra\n");
+            }
+            else if (a.tab[a.top].value > a.tab[1].value && a.tab[a.top].value < a.tab[0].value)
+            {
+                manage_instruction_indexed_stack(&a, &b, "rra");
+                printf("rra\n");
+                manage_instruction_indexed_stack(&a, &b, "pb");
+                printf("pb\n");
+                three_num(a.tab[2].value, a.tab[1].value, a.tab[0].value, &a, &b);
+                manage_instruction_indexed_stack(&a, &b, "pa");
+                printf("pa\n");
+                manage_instruction_indexed_stack(&a, &b, "ra");
+                printf("ra\n");
+            }
+
+            manage_instruction_indexed_stack(&a, &b, "pa");
+            printf("pa\n");
         }
+
+
         else if (ac - 1 <= 100)
         {
            
