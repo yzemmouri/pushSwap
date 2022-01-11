@@ -31,6 +31,61 @@ void    three_num(int a, int b, int c, t_indexed_stack *sa, t_indexed_stack *sb)
     }
 }
 
+int is_new_max(t_indexed_stack s, int num)
+{
+	int i;
+
+	i = s.top;
+	while (i >= 0)
+	{
+		if (s.tab[i].value > num)
+			return (1);
+		i--;
+	}
+	return (0);
+}
+
+int elem_position(t_indexed_stack s, int num)
+{
+	int i;
+
+	i = s.top;
+	while (i >= 0)
+	{
+		if (s.tab[i].value > num && s.tab[i].value > num)
+			return (1);
+		i--;
+	}
+	return (0);
+}
+
+int is_new_min(t_indexed_stack s, int num)
+{
+	int i;
+	int max;
+	int index;
+	int is_min;
+
+	is_min = 1;
+	max = -1;
+	index = -1;
+	i = s.top;
+	while (i >= 0)
+	{
+		if (s.tab[i].value < num)
+			is_min = 0;
+		if (s.tab[i].value > max)
+		{
+			max = s.tab[i].value;
+			index = s.tab[i].index;
+		}
+		i--;
+	}
+	if (is_min)
+		return index;
+	return (-1);
+}
+
 int main(int ac, char **av)
 {
     int i;
@@ -94,120 +149,67 @@ int main(int ac, char **av)
         ++i;
     }
     
-
     if (is_sorted_indexed_array(a.tab, ac - 1))
         return (0);
     else
     {   
         if (ac - 1 == 3)
             three_num(a.tab[2].value, a.tab[1].value, a.tab[0].value, &a, &b);
-        else if (ac - 1 <= 5)
+        else if (ac - 1 <= 10)
         {
-            if (ac - 1 == 5)
-            {
-                manage_instruction_indexed_stack(&a, &b, "pb");
-                printf("pb\n");
-            }
-            manage_instruction_indexed_stack(&a, &b, "pb");
-            printf("pb\n");
-            three_num(a.tab[2].value, a.tab[1].value, a.tab[0].value, &a, &b);
+			int i = a.top;
+            int num_chunk = 1;
+			int new_max;
+			int new_min;
+			while(i >= 0)
+			{
+				if (b.top < 1)
+				{
+					printf("pb");
+					manage_instruction_indexed_stack(&a, &b, "pb");
+				}
+				else
+				{
+					new_max = is_new_max(b, a.tab[i].value);
+					if (new_max)
+					{
+						printf("pb");
+						manage_instruction_indexed_stack(&a, &b, "pb");
+					}
+					else if ((new_min = is_new_min(b, a.tab[i].value)) != -1)
+					{
+						if (new_min >= b.top / 2)
+						{
+							int j = b.top - new_min;
+							while (j > 0)
+							{
+								printf("rb");
+								manage_instruction_indexed_stack(&a, &b, "rb");
+								j--;
+							}
+						}
+						else
+						{
+							int j = new_min + 1;
+							while (j > 0)
+							{
+								printf("rrb");
+								manage_instruction_indexed_stack(&a, &b, "rrb");
+								j--;
+							}
+						}
+						printf("pb");
+						manage_instruction_indexed_stack(&a, &b, "pb");
+					}
+					else
+					{
 
-            manage_instruction_indexed_stack(&a, &b, "pa");
-            printf("pa\n");
-
-            if (a.tab[a.top].value > a.tab[0].value)
-            {
-                manage_instruction_indexed_stack(&a, &b, "ra");
-                printf("ra\n");
-            }
-            else if (a.tab[a.top].value > a.tab[1].value && a.tab[a.top].value < a.tab[0].value)
-            {
-                manage_instruction_indexed_stack(&a, &b, "rra");
-                printf("rra\n");
-                manage_instruction_indexed_stack(&a, &b, "pb");
-                printf("pb\n");
-                three_num(a.tab[2].value, a.tab[1].value, a.tab[0].value, &a, &b);
-                manage_instruction_indexed_stack(&a, &b, "pa");
-                printf("pa\n");
-                manage_instruction_indexed_stack(&a, &b, "ra");
-                printf("ra\n");
-            }
-            else if (a.tab[a.top].value > a.tab[2].value && a.tab[a.top].value < a.tab[1].value)
-            {    
-                manage_instruction_indexed_stack(&a, &b, "sa");
-                printf("sa\n");
-            }
-            if (ac - 1 == 5)
-            {
-                manage_instruction_indexed_stack(&a, &b, "pa");
-                printf("pa\n");
-                if (a.tab[a.top].value > a.tab[0].value)
-                {
-                    manage_instruction_indexed_stack(&a, &b, "ra");
-                    printf("ra\n");
-                }
-                else if (a.tab[a.top].value > a.tab[1].value && a.tab[a.top].value < a.tab[0].value)
-                {
-
-                }
-            }
+					}
+				}
+				
+				i--;
+			}
             
-        }
-
-
-        else if (ac - 1 <= 100)
-        {
-            int i;
-            int len_chunk = 2;
-
-            int min = 0;
-            int max = (a.top / 5);
-
-            int up = a.top;
-            int down = 0;
-
-            int chunk_num = 1;
-
-            int middle = a.top / 2;
-
-            while (down <= middle)
-            {
-                if (a.tab[down].value >= min && a.tab[down].value <= max)
-                {
-                    printf("**%d**",down);
-                    break;
-                }
-                down++;
-            }
-            while (up > middle)
-            {
-                if (a.tab[up].value >= min && a.tab[up].value <= max)
-                {
-                    printf("++%d++",up);
-                    break;
-                }
-                up--;
-            }
-            if (down + 1 < a.top - up)
-            {
-                printf("kkk");
-                i = down + 1;
-                while (i > 0)
-                {
-                    manage_instruction_indexed_stack(&a, &b, "rra");
-                    i--;
-                }
-            }
-            else
-            {
-                i = a.top - up;
-                while (i > 0)
-                {
-                    printf("fef");
-                    manage_instruction_indexed_stack(&a, &b, "ra");
-                    i--;
-                }
-            }
         }
         // else if (ac - 1 <= 500)
         // {
