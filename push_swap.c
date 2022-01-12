@@ -31,58 +31,130 @@ void    three_num(int a, int b, int c, t_indexed_stack *sa, t_indexed_stack *sb)
     }
 }
 
-int is_new_max(t_indexed_stack s, int num)
+void put_elem_top_b(t_indexed_stack *sa, t_indexed_stack *sb, int num)
+{
+    int j;
+
+    if (num >= (int)(sb->top / 2))
+	{
+		j = sb->top - num;
+		while (j > 0)
+		{
+			printf("rb\n");
+			manage_instruction_indexed_stack(sa, sb, "rb");
+			j--;
+		}
+	}
+	else
+	{
+		j = num + 1;
+		while (j > 0)
+		{
+			printf("rrb\n");
+			manage_instruction_indexed_stack(sa, sb, "rrb");
+			j--;
+		}
+	}
+}
+
+void put_elem_top_a(t_indexed_stack *sa, t_indexed_stack *sb, int num)
+{
+    int j;
+
+    if (num >= (int)(sa->top / 2))
+	{
+		j = sa->top - num;
+		while (j > 0)
+		{
+			printf("ra\n");
+			manage_instruction_indexed_stack(sa, sb, "ra");
+			j--;
+		}
+	}
+	else
+	{
+		j = num + 1;
+		while (j > 0)
+		{
+			printf("rra\n");
+			manage_instruction_indexed_stack(sa, sb, "rra");
+			j--;
+		}
+	}
+}
+
+int best_elem(t_indexed_stack *sa, int start, int max)
+{
+    int t_top;
+    int t_bottom;
+    int index;
+  
+    t_top = sa->top;
+    t_bottom = 0;
+    index = -1;
+    while (t_top >= t_bottom)
+    {
+        if (sa->tab[t_bottom].value >= start && sa->tab[t_bottom].value <= max)
+        {
+            index = t_bottom;
+            break ;
+        }
+        if (sa->tab[t_top].value >= start && sa->tab[t_top].value <= max)
+        {
+            index = t_top;
+            break ;
+        }
+        t_top--;
+        t_bottom++;
+    }
+    return (index);   
+}
+
+
+void put_elem_position(t_indexed_stack *sa, t_indexed_stack *sb, int num)
 {
 	int i;
 
-	i = s.top;
+	i = sb->top - 1;
 	while (i >= 0)
 	{
-		if (s.tab[i].value > num)
-			return (1);
+		if (sb->tab[i].value < num && sb->tab[i + 1].value > num)
+        {
+            put_elem_top_b(sa, sb, i);
+            break ;
+        }
 		i--;
 	}
-	return (0);
 }
 
-int elem_position(t_indexed_stack s, int num)
-{
-	int i;
-
-	i = s.top;
-	while (i >= 0)
-	{
-		if (s.tab[i].value > num && s.tab[i].value > num)
-			return (1);
-		i--;
-	}
-	return (0);
-}
-
-int is_new_min(t_indexed_stack s, int num)
+int is_new_min_max(t_indexed_stack s, int num)
 {
 	int i;
 	int max;
 	int index;
 	int is_min;
+    int is_max;
 
 	is_min = 1;
+    is_max = 1;
 	max = -1;
 	index = -1;
 	i = s.top;
 	while (i >= 0)
 	{
+        if (s.tab[i].value > num)
+			is_max = 0;
 		if (s.tab[i].value < num)
 			is_min = 0;
 		if (s.tab[i].value > max)
 		{
 			max = s.tab[i].value;
-			index = s.tab[i].index;
+			index = i;
 		}
 		i--;
 	}
-	if (is_min)
-		return index;
+	if (is_min || is_max)
+		return (index);
 	return (-1);
 }
 
@@ -117,7 +189,7 @@ int main(int ac, char **av)
     //     printf("%d-->%d\n", a.tab[i].index, a.tab[i].value);
     //     ++i;
     // }
-    printf("\n\n");
+    // printf("\n\n");
     // printf("--%d--",a.tab[0].value);
     mergeSort(a.tab, 0, ac - 2, 1);
     // i=0;
@@ -143,11 +215,11 @@ int main(int ac, char **av)
     mergeSort(a.tab, 0, ac - 2, 0);
 
     i = 0;
-    while (i < ac - 1)
-    {
-        printf("%d-->%d\n", a.tab[i].index, a.tab[i].value);
-        ++i;
-    }
+    // while (i < ac - 1)
+    // {
+    //     printf("%d-->%d\n", a.tab[i].index, a.tab[i].value);
+    //     ++i;
+    // }
     
     if (is_sorted_indexed_array(a.tab, ac - 1))
         return (0);
@@ -158,70 +230,70 @@ int main(int ac, char **av)
         else if (ac - 1 <= 10)
         {
 			int i = a.top;
-            int num_chunk = 1;
-			int new_max;
-			int new_min;
+            // int num_chunk = 1;
+			int new_max_min;
+			// int new_min;
 			while(i >= 0)
 			{
-				if (b.top < 1)
+				if (b.top >= 1)
 				{
-					printf("pb");
-					manage_instruction_indexed_stack(&a, &b, "pb");
-				}
-				else
-				{
-					new_max = is_new_max(b, a.tab[i].value);
-					if (new_max)
-					{
-						printf("pb");
-						manage_instruction_indexed_stack(&a, &b, "pb");
-					}
-					else if ((new_min = is_new_min(b, a.tab[i].value)) != -1)
-					{
-						if (new_min >= b.top / 2)
-						{
-							int j = b.top - new_min;
-							while (j > 0)
-							{
-								printf("rb");
-								manage_instruction_indexed_stack(&a, &b, "rb");
-								j--;
-							}
-						}
-						else
-						{
-							int j = new_min + 1;
-							while (j > 0)
-							{
-								printf("rrb");
-								manage_instruction_indexed_stack(&a, &b, "rrb");
-								j--;
-							}
-						}
-						printf("pb");
-						manage_instruction_indexed_stack(&a, &b, "pb");
-					}
+					new_max_min = is_new_min_max(b, a.tab[i].value);
+					if (new_max_min != -1)
+					    put_elem_top_b(&a, &b, new_max_min);
 					else
-					{
-
-					}
+                        put_elem_position(&a, &b, a.tab[i].value);
 				}
-				
+                printf("pb\n");
+                manage_instruction_indexed_stack(&a, &b, "pb");
 				i--;
+                // int j = b.top;
+                // printf("[");
+                // while (j >= 0)
+                // {
+                //     printf("%d ", b.tab[j].value);
+                //     j--;
+                // }
+                // printf("]");
 			}
             
         }
-        // else if (ac - 1 <= 500)
-        // {
-            
-        // }
-    }
-    // while (a.top >= 0)
-    // {
-    //     printf("%d ", a.tab[a.top].value);
-    //     --a.top;
-    // }
+        else if (ac - 1 <= 100)
+        {
+            int num_chunk = 5;
+            int len_chunk = (ac - 1) / num_chunk;
+			int new_max_min;
+			int max;
+            int index;
 
+            max = len_chunk - 1;
+			while(num_chunk > 0)
+			{
+                index = best_elem(&a, max - len_chunk + 1, max);
+                while (index != -1)
+                {
+                    put_elem_top_a(&a, &b, index);
+				    if (b.top >= 1)
+				    {
+				    	new_max_min = is_new_min_max(b, a.tab[a.top].value);
+				    	if (new_max_min != -1)
+				    	    put_elem_top_b(&a, &b, new_max_min);
+				    	else
+                            put_elem_position(&a, &b, a.tab[a.top].value);
+				    }
+                    printf("pb\n");
+                    manage_instruction_indexed_stack(&a, &b, "pb");
+                    index = best_elem(&a, max - len_chunk + 1, max);
+                }
+                max = max + len_chunk;
+				num_chunk--;
+			}
+        }
+    }
+    while (a.top >= 0)
+    {
+        printf("%d ", a.tab[a.top].value);
+        --a.top;
+    }
     printf("\n");
     while (b.top >= 0)
     {
