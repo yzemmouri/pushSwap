@@ -25,9 +25,9 @@ void    px_instr(t_indexed_stack *s1, t_indexed_stack *s2)
 {
     if (s2->top >= 0)
     {
-        s1->top = ++s1->top;
+        ++s1->top;
         s1->tab[s1->top] = s2->tab[s2->top];
-        s2->top = --s2->top;
+        --s2->top;
     }
 }
 

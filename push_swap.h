@@ -3,12 +3,11 @@
 #include "./libft/libft.h"
 #include <stdio.h>
 
-typedef struct instruction instruction;
-struct instruction
+typedef struct              s_instruction
 {
-    char* value;
-    instruction *suivant;
-};
+    char                    *value;
+    struct  s_instruction   *next;
+}                           t_instruction;
 
 typedef struct s_stack
 {
@@ -36,7 +35,6 @@ typedef struct  s_merge_tools
     int n1;
     int n2;
 }               t_merge_tools;
-
 
 void    is_valid_args(char *arg);
 void    is_doubling(t_stack s);

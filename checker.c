@@ -37,25 +37,25 @@ int main(int ac, char **av)
             --i;
         }
     }
-    while (get_next_line(1, &line))
+    while (get_next_line(0, &line) > 0)
     {
         if (is_valid_instruction(line) == 0)
             error("Error");
         manage_instruction(&a,&b,line);
     }
     
-    while (a.top >= 0)
-    {
-        printf("%d ", a.tab[a.top]);
-        --a.top;
-    }
+    // while (a.top >= 0)
+    // {
+    //     printf("%d ", a.tab[a.top]);
+    //     --a.top;
+    // }
 
-    printf("\n");
-    while (b.top >= 0)
-    {
-        printf("%d ", b.tab[b.top]);
-        --b.top;
-    }
+    // printf("\n");
+    // while (b.top >= 0)
+    // {
+    //     printf("%d ", b.tab[b.top]);
+    //     --b.top;
+    // }
 
     if (is_valid_sorted_stack(a, b, ac - 1))
         printf("OK\n");
