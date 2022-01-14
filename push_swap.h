@@ -40,14 +40,21 @@ typedef struct s_indexed_stack
     int             top;
 }              t_indexed_stack;
 
-typedef struct  s_merge_tools
+typedef struct  s_merge
 {
     int i;
     int j;
     int k;
     int n1;
     int n2;
-}               t_merge_tools;
+}               t_merge;
+
+typedef struct s_merge_param
+{
+    int     r;
+    int     l;
+    int     m;
+}               t_merge_param;
 
 typedef struct s_sdl
 {
@@ -68,7 +75,7 @@ void    manage_instruction(t_stack *sa, t_stack *sb, char *instr);
 void    manage_instruction_indexed_stack(t_sdl *data, t_indexed_stack *sa, t_indexed_stack *sb, char *instr);
 int     is_sorted_array(int *a, int n);
 int     is_sorted_indexed_array(t_indexed_value *a, int n);
-void    mergeSort(t_indexed_value *stack, int l, int r, int by_val);
+void    merge_sort(t_indexed_value *stack, int l, int r, int by_val);
 void	init_sdl(t_sdl *data);
 void	loop_program(t_sdl *data);
 void	sdl_error(char *message);

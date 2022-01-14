@@ -1,0 +1,15 @@
+
+	// while (a.top >= 0)
+	// {
+	//     printf("%d ", a.tab[a.top].value);
+	//     --a.top;
+		
+	// }
+
+	// printf("\n-------------------- --------\n");
+
+	// while (b.top >= 0)
+	// {
+	//    printf("%d --", b.tab[b.top].value);
+	//     --b.top;
+	// }

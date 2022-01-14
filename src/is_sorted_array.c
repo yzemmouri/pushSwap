@@ -27,7 +27,7 @@ int	is_sorted_indexed_array(t_indexed_value *a, int n)
 		&& is_sorted_indexed_array(a, n - 1));
 }
 
-void	init_tools_merge(t_merge_tools *t, t_merge_tools val)
+void	init_tools_merge(t_merge *t, t_merge val)
 {
 	t->i = val.i;
 	t->j = val.j;
@@ -36,7 +36,7 @@ void	init_tools_merge(t_merge_tools *t, t_merge_tools val)
 	t->n2 = val.n2;
 }
 
-void	merge_insert(t_indexed_value *stack, t_merge_tools t, t_indexed_value *l,
+void	merge_insert(t_indexed_value *stack, t_merge t, t_indexed_value *l,
 t_indexed_value *r)
 {
 	while (t.i < t.n1)
@@ -53,45 +53,68 @@ t_indexed_value *r)
 	}
 }
 
-void	merge(t_indexed_value *stack, int left, int m, int right, int by_val)
+void	merge(t_indexed_value *stack, t_merge_param merge_par, int by_val)
 {
-	t_merge_tools	t;
-	t_indexed_value	l[m - left + 1];
-	t_indexed_value	r[right - m];
+	t_merge			t;
+	t_indexed_value	*l;
+	t_indexed_value	*r;
 
-	init_tools_merge(&t, (t_merge_tools){-1, -1, left, m - left + 1, right - m});
+	l = (t_indexed_value *)malloc((merge_par.m - merge_par.l + 1)
+			* sizeof(t_indexed_value));
+	r = (t_indexed_value *)malloc((merge_par.r - merge_par.m)
+			* sizeof(t_indexed_value));
+	init_tools_merge(&t, (t_merge){-1, -1, merge_par.l, merge_par.m
+		- merge_par.l + 1, merge_par.r - merge_par.m});
 	while (++t.i < t.n1)
-		l[t.i] = stack[left + t.i];
+		l[t.i] = stack[merge_par.l + t.i];
 	while (++t.j < t.n2)
-		r[t.j] = stack[m + 1 + t.j];
+		r[t.j] = stack[merge_par.m + 1 + t.j];
 	t.i = 0;
 	t.j = 0;
 	while (t.i < t.n1 && t.j < t.n2)
 	{
-		if(by_val)
+		if (by_val)
 		{
-			stack[t.k] = l[t.i].value <= r[t.j].value ? l[t.i] : r[t.j];
-			l[t.i].value <= r[t.j].value ? t.i++ : t.j++;
+			if (l[t.i].value <= r[t.j].value)
+			{
+				stack[t.k] = l[t.i];
+				t.i++;
+			}
+			else
+			{
+				stack[t.k] = r[t.j];
+				t.j++;
+			}
 		}
 		else
 		{
-			stack[t.k] = l[t.i].index <= r[t.j].index ? l[t.i] : r[t.j];
-			l[t.i].index <= r[t.j].index ? t.i++ : t.j++;
+			if (l[t.i].index <= r[t.j].index)
+			{
+				stack[t.k] = l[t.i];
+				t.i++;
+			}
+			else
+			{
+				stack[t.k] = r[t.j];
+				t.j++;
+			}
 		}
 		t.k++;
 	}
 	merge_insert(stack, t, l, r);
 }
 
-void	mergeSort(t_indexed_value *stack, int l, int r, int by_val)
+void	merge_sort(t_indexed_value *stack, int l, int r, int by_val)
 {
-	int m;
+	int				m;
+	t_merge_param	merge_par;
 
 	if (l < r)
 	{
 		m = l + (r - l) / 2;
-		mergeSort(stack, l, m, by_val);
-		mergeSort(stack, m + 1, r, by_val);
-		merge(stack, l, m, r, by_val);
+		merge_sort(stack, l, m, by_val);
+		merge_sort(stack, m + 1, r, by_val);
+		merge_par = (t_merge_param){r, l, m};
+		merge(stack, merge_par, by_val);
 	}
 }
