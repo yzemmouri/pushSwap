@@ -1,6 +1,6 @@
-#include "push_swap.h"
+#include "../push_swap.h"
 
-t_instruction   *add_instr(t_instruction   *instrs, char *oper)
+t_instruction   *add_instr(t_instruction *instrs, char *oper)
 {
     t_instruction *new;
     t_instruction *temp;
@@ -38,7 +38,7 @@ int max(int a, int b)
     return (b);
 }
 
-t_instruction  *put_elem_top_b(t_indexed_stack *sa, t_indexed_stack *sb, int num, t_instruction *instr_b)
+t_instruction  *put_elem_top_b(t_sdl *data, t_indexed_stack *sa,t_indexed_stack *sb, int num, t_instruction *instr_b)
 {
     int j;
 
@@ -48,8 +48,7 @@ t_instruction  *put_elem_top_b(t_indexed_stack *sa, t_indexed_stack *sb, int num
 		while (j > 0)
 		{
             instr_b = add_instr(instr_b, "rb");
-			// printf("rb\n");
-			manage_instruction_indexed_stack(sa, sb, "rb");
+			manage_instruction_indexed_stack(data, sa, sb, "rb");
 			j--;
 		}
 	}
@@ -59,19 +58,18 @@ t_instruction  *put_elem_top_b(t_indexed_stack *sa, t_indexed_stack *sb, int num
 		while (j > 0)
 		{
             instr_b = add_instr(instr_b, "rrb");
-			// printf("rrb\n");
-			manage_instruction_indexed_stack(sa, sb, "rrb");
+			manage_instruction_indexed_stack(data, sa, sb, "rrb");
 			j--;
 		}
 	}
     return (instr_b);
 }
 
-t_instruction  *put_elem_top_b_opt(t_indexed_stack *sa, t_indexed_stack *sb, int num, t_instruction *instr_a, t_instruction *instr_b)
+t_instruction  *put_elem_top_b_opt(t_sdl *data, t_indexed_stack *sa, t_indexed_stack *sb, int num, t_instruction *instr_a, t_instruction *instr_b)
 {
-    int j;
-    int a_instr_len;
-    char *a_instr;
+    int     j;
+    int     a_instr_len;
+    char    *a_instr_type;
     int     rb_len;
     int     rrb_len;
 
@@ -80,13 +78,13 @@ t_instruction  *put_elem_top_b_opt(t_indexed_stack *sa, t_indexed_stack *sb, int
     rrb_len = num + 1;
     if (instr_a)
     {
-        a_instr = instr_a->value;
+        a_instr_type = instr_a->value;
         while (instr_a)
         {
             ++a_instr_len;
             instr_a = instr_a->next;
         }
-        if (ft_strcmp(a_instr, "ra") == 0)
+        if (ft_strcmp(a_instr_type, "ra") == 0)
         {
             rb_len = max(a_instr_len + 1, rb_len);
             rrb_len = a_instr_len + 1 + rrb_len;
@@ -103,8 +101,7 @@ t_instruction  *put_elem_top_b_opt(t_indexed_stack *sa, t_indexed_stack *sb, int
 		while (j > 0)
 		{
             instr_b = add_instr(instr_b, "rb");
-			// printf("rb\n");
-			manage_instruction_indexed_stack(sa, sb, "rb");
+			manage_instruction_indexed_stack(data, sa, sb, "rb");
 			j--;
 		}
 	}
@@ -114,15 +111,14 @@ t_instruction  *put_elem_top_b_opt(t_indexed_stack *sa, t_indexed_stack *sb, int
 		while (j > 0)
 		{
             instr_b = add_instr(instr_b, "rrb");
-			// printf("rrb\n");
-			manage_instruction_indexed_stack(sa, sb, "rrb");
+			manage_instruction_indexed_stack(data, sa, sb, "rrb");
 			j--;
 		}
 	}
     return (instr_b);
 }
 
-t_instruction *put_elem_top_a(t_indexed_stack *sa, t_indexed_stack *sb, int num, t_instruction *instr)
+t_instruction *put_elem_top_a(t_sdl *data, t_indexed_stack *sa, t_indexed_stack *sb, int num, t_instruction *instr)
 {
     int j;
 
@@ -132,8 +128,7 @@ t_instruction *put_elem_top_a(t_indexed_stack *sa, t_indexed_stack *sb, int num,
 		while (j > 0)
 		{
             instr = add_instr(instr, "ra");
-			// printf("ra\n");
-			manage_instruction_indexed_stack(sa, sb, "ra");
+			manage_instruction_indexed_stack(data, sa, sb, "ra");
 			j--;
 		}
 	}
@@ -143,8 +138,7 @@ t_instruction *put_elem_top_a(t_indexed_stack *sa, t_indexed_stack *sb, int num,
 		while (j > 0)
 		{
             instr = add_instr(instr, "rra");
-			// printf("rra\n");
-			manage_instruction_indexed_stack(sa, sb, "rra");
+			manage_instruction_indexed_stack(data, sa, sb, "rra");
 			j--;
 		}
 	}
@@ -162,12 +156,12 @@ int best_elem(t_indexed_stack *sa, int start, int max)
     index = -1;
     while (t_top >= t_bottom)
     {
-        if (sa->tab[t_bottom].value >= start && sa->tab[t_bottom].value <= max)
+        if (sa->tab[t_bottom].equiv >= start && sa->tab[t_bottom].equiv <= max)
         {
             index = t_bottom;
             break ;
         }
-        if (sa->tab[t_top].value >= start && sa->tab[t_top].value <= max)
+        if (sa->tab[t_top].equiv >= start && sa->tab[t_top].equiv <= max)
         {
             index = t_top;
             break ;
@@ -179,16 +173,16 @@ int best_elem(t_indexed_stack *sa, int start, int max)
 }
 
 
-t_instruction *put_elem_position(t_indexed_stack *sa, t_indexed_stack *sb, int num, t_instruction *instr_a, t_instruction *instr_b)
+t_instruction *put_elem_position(t_sdl *data, t_indexed_stack *sa, t_indexed_stack *sb, int num, t_instruction *instr_a, t_instruction *instr_b)
 {
 	int i;
 
 	i = sb->top - 1;
 	while (i >= 0)
 	{
-		if (sb->tab[i].value < num && sb->tab[i + 1].value > num)
+		if (sb->tab[i].equiv < num && sb->tab[i + 1].equiv > num)
         {
-            instr_b = put_elem_top_b_opt(sa, sb, i, instr_a, instr_b);
+            instr_b = put_elem_top_b_opt(data, sa, sb, i, instr_a, instr_b);
             break ;
         }
 		i--;
@@ -202,14 +196,14 @@ int find_max(t_indexed_stack s)
 	int max;
     int index;
 
-	max = s.tab[s.top].value;
+	max = s.tab[s.top].equiv;
     index = s.top;
 	i = s.top - 1;
 	while (i >= 0)
 	{
-		if (s.tab[i].value > max)
+		if (s.tab[i].equiv > max)
 		{
-			max = s.tab[i].value;
+			max = s.tab[i].equiv;
             index = i;
 		}
 		i--;
@@ -232,13 +226,13 @@ int is_new_min_max(t_indexed_stack s, int num)
 	i = s.top;
 	while (i >= 0)
 	{
-        if (s.tab[i].value > num)
+        if (s.tab[i].equiv > num)
 			is_max = 0;
-		if (s.tab[i].value < num)
+		if (s.tab[i].equiv < num)
 			is_min = 0;
-		if (s.tab[i].value > max)
+		if (s.tab[i].equiv > max)
 		{
-			max = s.tab[i].value;
+			max = s.tab[i].equiv;
 			index = i;
 		}
 		i--;
@@ -261,8 +255,6 @@ t_instruction *fusion(t_instruction *instrs, t_instruction *instrs_a, t_instruct
             instrs = add_instr(instrs, "rr");
         else if (ft_strcmp(tmp1->value, "rra") == 0 && ft_strcmp(tmp2->value, "rrb") == 0)
             instrs = add_instr(instrs, "rrr");
-        // else if (ft_strcmp(tmp1->value, "sa") && ft_strcmp(tmp2->value, "sb"))
-        //     instrs = add_instr(instrs, "ss");
         else
         {
             instrs = add_instr(instrs, tmp2->value);
@@ -298,10 +290,11 @@ t_instruction    *free_instrs(t_instruction   *instrs)
         free(current);
         instrs = instrs->next;
     }
+    instrs = NULL;
     return (instrs);
 }
 
-t_instruction    *complex_sort(t_indexed_stack *sa, t_indexed_stack *sb, int num_chunk, int total_num, t_instruction *instrs)
+t_instruction    *complex_sort(t_sdl *data, t_indexed_stack *sa, t_indexed_stack *sb, int num_chunk, int total_num, t_instruction *instrs)
 {
     int len_chunk = total_num / num_chunk;
 	int new_max_min;
@@ -318,37 +311,26 @@ t_instruction    *complex_sort(t_indexed_stack *sa, t_indexed_stack *sb, int num
         index = best_elem(sa, max - len_chunk + 1, max);
         if (index != -1)
         {
-            instrs_a = put_elem_top_a(sa, sb, index, instrs_a);
+            instrs_a = put_elem_top_a(data, sa, sb, index, instrs_a);
 		    if (sb->top >= 1)
 		    {
-		    	new_max_min = is_new_min_max(*sb, sa->tab[sa->top].value);
+		    	new_max_min = is_new_min_max(*sb, sa->tab[sa->top].equiv);
 		    	if (new_max_min != -1)
-		    	    instrs_b = put_elem_top_b_opt(sa, sb, new_max_min, instrs_a,instrs_b);
+		    	    instrs_b = put_elem_top_b_opt(data, sa, sb, new_max_min, instrs_a, instrs_b);
 		    	else
-                    instrs_b = put_elem_position(sa, sb, sa->tab[sa->top].value, instrs_a,instrs_b);
+                    instrs_b = put_elem_position(data, sa, sb, sa->tab[sa->top].equiv, instrs_a,instrs_b);
 		    }
             instrs = fusion(instrs, instrs_a, instrs_b);
 
             instrs_a = free_instrs(instrs_a);
             instrs_b = free_instrs(instrs_b);
             instrs = add_instr(instrs, "pb");
-            // printf("pb\n");
-            manage_instruction_indexed_stack(sa, sb, "pb");
+            manage_instruction_indexed_stack(data, sa, sb, "pb");
         }
         else
             max = max + len_chunk;
-		//num_chunk--;
-        
-        // int j = sb->top;
-        // printf("[");
-        // while (j >= 0)
-        // {
-        //     printf("%d ", sb->tab[j].value);
-        //     j--;
-        // }
-        // printf("]");
 	}
-    instrs = put_elem_top_b(NULL, sb, find_max(*sb), instrs);
+    instrs = put_elem_top_b(data, sa, sb, find_max(*sb), instrs);
     
     return (instrs);
 }
@@ -367,43 +349,43 @@ void    print_instrs(t_instruction *instrs)
 }
 
 
-t_instruction   *three_num(int a, int b, int c, t_indexed_stack *sa, t_instruction *instrs)
+t_instruction   *three_num(t_sdl *data, int a, int b, int c, t_indexed_stack *sa,t_indexed_stack *sb, t_instruction *instrs)
 {
     if (a > b && b < c && c > a)
     {
         instrs = add_instr(instrs, "sa");
-        //printf("sa\n");
-        manage_instruction_indexed_stack(sa, NULL, "sa");
+        manage_instruction_indexed_stack(data, sa, sb, "sa");
     }
     else if (a > b && b > c && c < a)
     {
         instrs = add_instr(instrs, "sa");
         instrs = add_instr(instrs, "rra");
-        // printf("sa\nrra\n");
-        manage_instruction_indexed_stack(sa, NULL, "sa");
-        manage_instruction_indexed_stack(sa, NULL, "rra");
+        manage_instruction_indexed_stack(data, sa, sb, "sa");
+        manage_instruction_indexed_stack(data, sa, sb, "rra");
     }
     else if (a > b && b < c && c < a)
     {
         instrs = add_instr(instrs, "ra");
-        // printf("ra\n");
-        manage_instruction_indexed_stack(sa, NULL, "ra");
+        manage_instruction_indexed_stack(data, sa, sb, "ra");
     }
     else if (a < b && b > c && c > a)
     {
         instrs = add_instr(instrs, "sa");
         instrs = add_instr(instrs, "ra");
-        // printf("sa\nra\n");
-        manage_instruction_indexed_stack(sa, NULL, "sa");
-        manage_instruction_indexed_stack(sa, NULL, "ra");
+        manage_instruction_indexed_stack(data, sa, sb, "sa");
+        manage_instruction_indexed_stack(data, sa, sb, "ra");
     }
     else if (a < b && b > c && c < a)
     {
         instrs = add_instr(instrs, "rra");
-        // printf("rra\n");
-        manage_instruction_indexed_stack(sa, NULL, "rra");
+        manage_instruction_indexed_stack(data, sa, sb, "rra");
     }
     return (instrs);
+}
+
+char        is_option_activated(char option, int option_index)
+{
+    return ((option >> option_index) & 1);
 }
 
 int main(int ac, char **av)
@@ -413,18 +395,44 @@ int main(int ac, char **av)
     t_indexed_stack b;
     t_instruction   *instrs;
 
+    t_sdl sdl_tools;
 
     instrs = NULL;
-
-    i = ac - 1;
+    sdl_tools.options = 0;
     if (ac < 2)
         return (0);
     else
     {
+        i = 1;
+        while (i <= 2)
+        {
+            if (av[i][0] == '-')
+            {
+                if (ft_strequ(av[i], "-v"))
+                {
+                    ++av;
+                    --ac;
+                    --i;
+                    sdl_tools.options |= 1;
+                }
+                else if (ft_strequ(av[i], "-c"))
+                {
+                    ++av;
+                    --ac;
+                    --i;
+                    sdl_tools.options |= 2;
+                }     
+            }
+            ++i;
+        }
+        if (ac < 2)
+            return (0);
         a.tab = (t_indexed_value *)malloc((ac - 1) * sizeof(t_indexed_value));
         a.top = -1;
         b.tab = (t_indexed_value *)malloc((ac - 1) * sizeof(t_indexed_value));
         b.top = -1;
+        
+        i = ac - 1;
         while (i > 0)
         {
             is_valid_args(av[i]);
@@ -434,87 +442,63 @@ int main(int ac, char **av)
             is_doubling_indexed(a);
             --i;
         }
-    }
-    i = 0;
-    // while (i < ac - 1)
-    // {
-    //     printf("%d-->%d\n", a.tab[i].index, a.tab[i].value);
-    //     ++i;
-    // }
-    // printf("\n\n");
-    // printf("--%d--",a.tab[0].value);
+    if (is_option_activated(sdl_tools.options, V_OPTION))
+        init_sdl(&sdl_tools);
     mergeSort(a.tab, 0, ac - 2, 1);
-    // i=0;
-    // while (i < ac - 1)
-    // {
-    //     printf("%d-->%d\n", a.tab[i].index, a.tab[i].value);
-    //     ++i;
-    // }
-    // i = 0;
-    // printf("\n\n");
+    
+    i = 0;
     while (i < ac - 1)
     {
-        a.tab[i].value = i;
+        a.tab[i].equiv = i;
         ++i;
     }
-     i = 0;
-    // while (i < ac - 1)
-    // {
-    //     printf("%d-->%d\n", a.tab[i].index, a.tab[i].value);
-    //     ++i;
-    // }
-    // printf("\n\n");
+    
     mergeSort(a.tab, 0, ac - 2, 0);
 
-    i = 0;
-    // while (i < ac - 1)
-    // {
-    //     printf("%d-->%d\n", a.tab[i].index, a.tab[i].value);
-    //     ++i;
-    // }
     
     if (is_sorted_indexed_array(a.tab, ac - 1))
         return (0);
     else
     {   
         if (ac - 1 == 3)
-            instrs = three_num(a.tab[2].value, a.tab[1].value, a.tab[0].value, &a, instrs);
+            instrs = three_num(&sdl_tools, a.tab[2].value, a.tab[1].value, a.tab[0].value, &a, &b, instrs);
         else if (ac - 1 <= 10)
-        {
-            instrs = complex_sort(&a, &b, 1, ac - 1, instrs);
-        }
+            instrs = complex_sort(&sdl_tools, &a, &b, 1, ac - 1, instrs);
         else if (ac - 1 <= 100)
-        {
-            instrs = complex_sort(&a, &b, 5, ac - 1, instrs);
-        }
+            instrs = complex_sort(&sdl_tools, &a, &b, 5, ac - 1, instrs);
         else
-        {
-            instrs = complex_sort(&a, &b, 11, ac - 1, instrs);
-        }
+            instrs = complex_sort(&sdl_tools, &a, &b, 11, ac - 1, instrs);
     }
     
-
-
     while (b.top > -1)
     {
         instrs = add_instr(instrs, "pa");
-        manage_instruction_indexed_stack(&a, &b, "pa");
+        manage_instruction_indexed_stack(&sdl_tools,&a, &b, "pa");
     }
 
     print_instrs(instrs);
 
-    // while (a.top >= 0)
-    // {
-    //     printf("%d ", a.tab[a.top].value);
-    //     --a.top;
+    while (a.top >= 0)
+    {
+        printf("%d ", a.tab[a.top].value);
+        --a.top;
         
-    // }
-    
-    // printf("\n-------------------- --------\n");
-    // while (b.top >= 0)
-    // {
-    //    printf("%d --", b.tab[b.top].value);
-    //     --b.top;
-    // }
+    }
+
+    printf("\n-------------------- --------\n");
+
+    while (b.top >= 0)
+    {
+       printf("%d --", b.tab[b.top].value);
+        --b.top;
+    }
+    // sleep(2);
+    // printf("loooop\n");
+    // SDL_Delay(2000);
+    if (is_option_activated(sdl_tools.options, V_OPTION))
+        loop_program(&sdl_tools);
+    /*miss free*/
+    }
+
     return (0);
 }

@@ -1,4 +1,4 @@
-#include "push_swap.h"
+#include "../push_swap.h"
 
 void    ft_swap_indexed(t_indexed_value *elem1, t_indexed_value *elem2)
 {
@@ -64,7 +64,7 @@ void    rot_rot_instr(t_indexed_value *tab1, t_indexed_value *tab2, int top1, in
     rot_instr(tab2, top2, to_up);
 }
 
-void    manage_instruction_indexed_stack(t_indexed_stack *sa, t_indexed_stack *sb, char *instr)
+void    manage_instruction_indexed_stack(t_sdl *data, t_indexed_stack *sa, t_indexed_stack *sb, char *instr)
 {
     if (ft_strcmp(instr, "sa") == 0)
         sx_instr(sa);
@@ -88,4 +88,6 @@ void    manage_instruction_indexed_stack(t_indexed_stack *sa, t_indexed_stack *s
         rot_instr(sb->tab, sb->top, 0);
     else if (ft_strcmp(instr, "rrr") == 0)
         rot_rot_instr(sa->tab, sb->tab, sa->top, sb->top, 0);
+    if (is_option_activated(data->options, V_OPTION))
+        draw(data, *sa, *sb);
 }
