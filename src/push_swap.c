@@ -12,15 +12,15 @@
 
 #include "../push_swap.h"
 
-t_instruction	*add_instr(t_instruction *instrs, char *oper)
+t_instr	*add_instr(t_instr *instrs, char *oper)
 {
-	t_instruction	*new;
-	t_instruction	*temp;
+	t_instr	*new;
+	t_instr	*temp;
 
 	// - error alloctatiom
 	if (oper)
 	{
-		new = malloc(sizeof(t_instruction));
+		new = malloc(sizeof(t_instr));
 		if (new)
 		{
 			new->value = malloc(ft_strlen(oper) + 1);
@@ -50,17 +50,17 @@ int	max(int a, int b)
 	return (b);
 }
 
-t_instruction	*put_elem_top_b(t_sdl *data, t_indexed_stack *sa,t_indexed_stack *sb, int num, t_instruction *instr_b)
+t_instr	*put_elem_top_b(t_env *env, int num, t_instr *instr_b)
 {
 	int	j;
 
-	if (num >= ((sb->top) / 2))
+	if (num >= ((env->b.top) / 2))
 	{
-		j = sb->top - num;
+		j = env->b.top - num;
 		while (j > 0)
 		{
 			instr_b = add_instr(instr_b, "rb");
-			manage_instruction_indexed_stack(data, sa, sb, "rb");
+			manage_indexed_stack(&env->sdl, &env->a, &env->b, "rb");
 			j--;
 		}
 	}
@@ -70,14 +70,14 @@ t_instruction	*put_elem_top_b(t_sdl *data, t_indexed_stack *sa,t_indexed_stack *
 		while (j > 0)
 		{
 			instr_b = add_instr(instr_b, "rrb");
-			manage_instruction_indexed_stack(data, sa, sb, "rrb");
+			manage_indexed_stack(&env->sdl, &env->a, &env->b, "rrb");
 			j--;
 		}
 	}
 	return (instr_b);
 }
 
-t_instruction	*put_elem_top_b_opt(t_sdl *data, t_indexed_stack *sa, t_indexed_stack *sb, int num, t_instruction *instr_a, t_instruction *instr_b)
+t_instr	*put_top_b_opt(t_env *env, int n, t_instr *instr_a, t_instr *instr_b)
 {
 	int		j;
 	int		a_instr_len;
@@ -86,8 +86,8 @@ t_instruction	*put_elem_top_b_opt(t_sdl *data, t_indexed_stack *sa, t_indexed_st
 	int		rrb_len;
 
 	a_instr_len = 0;
-	rb_len = sb->top - num;
-	rrb_len = num + 1;
+	rb_len = env->b.top - n;
+	rrb_len = n + 1;
 	if (instr_a)
 	{
 		a_instr_type = instr_a->value;
@@ -109,38 +109,38 @@ t_instruction	*put_elem_top_b_opt(t_sdl *data, t_indexed_stack *sa, t_indexed_st
 	}
 	if (rb_len <= rrb_len)
 	{
-		j = sb->top - num;
+		j = env->b.top - n;
 		while (j > 0)
 		{
 			instr_b = add_instr(instr_b, "rb");
-			manage_instruction_indexed_stack(data, sa, sb, "rb");
+			manage_indexed_stack(&env->sdl, &env->a, &env->b, "rb");
 			j--;
 		}
 	}
 	else
 	{
-		j = num + 1;
+		j = n + 1;
 		while (j > 0)
 		{
 			instr_b = add_instr(instr_b, "rrb");
-			manage_instruction_indexed_stack(data, sa, sb, "rrb");
+			manage_indexed_stack(&env->sdl, &env->a, &env->b, "rrb");
 			j--;
 		}
 	}
 	return (instr_b);
 }
 
-t_instruction	*put_elem_top_a(t_sdl *data, t_indexed_stack *sa, t_indexed_stack *sb, int num, t_instruction *instr)
+t_instr	*put_elem_top_a(t_env *env, int num, t_instr *instr)
 {
 	int	j;
 
-	if (num >= (int)(sa->top / 2))
+	if (num >= (int)(env->a.top / 2))
 	{
-		j = sa->top - num;
+		j = env->a.top - num;
 		while (j > 0)
 		{
 			instr = add_instr(instr, "ra");
-			manage_instruction_indexed_stack(data, sa, sb, "ra");
+			manage_indexed_stack(&env->sdl, &env->a, &env->b, "ra");
 			j--;
 		}
 	}
@@ -150,7 +150,7 @@ t_instruction	*put_elem_top_a(t_sdl *data, t_indexed_stack *sa, t_indexed_stack 
 		while (j > 0)
 		{
 			instr = add_instr(instr, "rra");
-			manage_instruction_indexed_stack(data, sa, sb, "rra");
+			manage_indexed_stack(&env->sdl, &env->a, &env->b, "rra");
 			j--;
 		}
 	}
@@ -184,17 +184,16 @@ int	best_elem(t_indexed_stack *sa, int start, int max)
 	return (index);   
 }
 
-
-t_instruction	*put_elem_position(t_sdl *data, t_indexed_stack *sa, t_indexed_stack *sb, int num, t_instruction *instr_a, t_instruction *instr_b)
+t_instr	*put_elem_position(t_env *env, int num, t_instr *instr_a, t_instr *instr_b)
 {
 	int	i;
 
-	i = sb->top - 1;
+	i = env->b.top - 1;
 	while (i >= 0)
 	{
-		if (sb->tab[i].equiv < num && sb->tab[i + 1].equiv > num)
+		if (env->b.tab[i].equiv < num && env->b.tab[i + 1].equiv > num)
 		{
-			instr_b = put_elem_top_b_opt(data, sa, sb, i, instr_a, instr_b);
+			instr_b = put_top_b_opt(env, i, instr_a, instr_b);
 			break ;
 		}
 		i--;
@@ -254,10 +253,10 @@ int is_new_min_max(t_indexed_stack s, int num)
 	return (-1);
 }
 
-t_instruction	*fusion(t_instruction *instrs, t_instruction *instrs_a, t_instruction *instrs_b)
+t_instr	*fusion(t_instr *instrs, t_instr *instrs_a, t_instr *instrs_b)
 {
-	t_instruction *tmp1;
-	t_instruction *tmp2;
+	t_instr *tmp1;
+	t_instr *tmp2;
 
 	tmp1 = instrs_a;
 	tmp2 = instrs_b;
@@ -289,9 +288,9 @@ t_instruction	*fusion(t_instruction *instrs, t_instruction *instrs_a, t_instruct
 	return (instrs);
 }
 
-t_instruction	*free_instrs(t_instruction *instrs)
+t_instr	*free_instrs(t_instr *instrs)
 {
-	t_instruction *current;
+	t_instr *current;
 
 	while (instrs != NULL)
 	{
@@ -304,50 +303,50 @@ t_instruction	*free_instrs(t_instruction *instrs)
 	return (instrs);
 }
 
-t_instruction	*complex_sort(t_sdl *data, t_indexed_stack *sa, t_indexed_stack *sb, int num_chunk, int total_num, t_instruction *instrs)
+t_instr	*complex_sort(t_env *env, int num_chunk, int total_num)
 {
 	int				len_chunk;
 	int				new_max_min;
 	int				max;
 	int				index;
-	t_instruction	*instrs_a;
-	t_instruction 	*instrs_b;
+	t_instr	*instrs_a;
+	t_instr 	*instrs_b;
 
 	len_chunk = total_num / num_chunk;
 	max = len_chunk - 1;
 	instrs_a = NULL;
 	instrs_b = NULL;
-	while(sa->top >= 0)
+	while(env->a.top >= 0)
 	{
-		index = best_elem(sa, max - len_chunk + 1, max);
+		index = best_elem(&env->a, max - len_chunk + 1, max);
 		if (index != -1)
 		{
-			instrs_a = put_elem_top_a(data, sa, sb, index, instrs_a);
-			if (sb->top >= 1)
+			instrs_a = put_elem_top_a(env, index, instrs_a);
+			if (env->b.top >= 1)
 			{
-				new_max_min = is_new_min_max(*sb, sa->tab[sa->top].equiv);
+				new_max_min = is_new_min_max(env->b, env->a.tab[env->a.top].equiv);
 				if (new_max_min != -1)
-					instrs_b = put_elem_top_b_opt(data, sa, sb, new_max_min, instrs_a, instrs_b);
+					instrs_b = put_top_b_opt(env, new_max_min, instrs_a, instrs_b);
 				else
-					instrs_b = put_elem_position(data, sa, sb, sa->tab[sa->top].equiv, instrs_a, instrs_b);
+					instrs_b = put_elem_position(env, env->a.tab[env->a.top].equiv, instrs_a, instrs_b);
 			}
-			instrs = fusion(instrs, instrs_a, instrs_b);
+			env->instrs = fusion(env->instrs, instrs_a, instrs_b);
 			instrs_a = free_instrs(instrs_a);
 			instrs_b = free_instrs(instrs_b);
-			instrs = add_instr(instrs, "pb");
-			manage_instruction_indexed_stack(data, sa, sb, "pb");
+			env->instrs = add_instr(env->instrs, "pb");
+			manage_indexed_stack(&env->sdl, &env->a, &env->b, "pb");
 		}
 		else
 			max = max + len_chunk;
 	}
-	instrs = put_elem_top_b(data, sa, sb, find_max(*sb), instrs);
+	env->instrs = put_elem_top_b(env, find_max(env->b), env->instrs);
 	
-	return (instrs);
+	return (env->instrs);
 }
 
-void	print_instrs(t_instruction *instrs)
+void	print_instrs(t_instr *instrs)
 {
-	t_instruction *current;
+	t_instr *current;
 
 	current = instrs;
    	while (current != NULL)
@@ -358,38 +357,38 @@ void	print_instrs(t_instruction *instrs)
 }
 
 
-t_instruction	*three_num(t_sdl *data, int a, int b, int c, t_indexed_stack *sa, t_indexed_stack *sb, t_instruction *instrs)
+t_instr	*three_num(t_env *env, int a, int b, int c)
 {
 	if (a > b && b < c && c > a)
 	{
-		instrs = add_instr(instrs, "sa");
-		manage_instruction_indexed_stack(data, sa, sb, "sa");
+		env->instrs = add_instr(env->instrs, "sa");
+		manage_indexed_stack(&env->sdl, &env->a, &env->b, "sa");
 	}
 	else if (a > b && b > c && c < a)
 	{
-		instrs = add_instr(instrs, "sa");
-		instrs = add_instr(instrs, "rra");
-		manage_instruction_indexed_stack(data, sa, sb, "sa");
-		manage_instruction_indexed_stack(data, sa, sb, "rra");
+		env->instrs = add_instr(env->instrs, "sa");
+		env->instrs = add_instr(env->instrs, "rra");
+		manage_indexed_stack(&env->sdl, &env->a, &env->b, "sa");
+		manage_indexed_stack(&env->sdl, &env->a, &env->b, "rra");
 	}
 	else if (a > b && b < c && c < a)
 	{
-		instrs = add_instr(instrs, "ra");
-		manage_instruction_indexed_stack(data, sa, sb, "ra");
+		env->instrs = add_instr(env->instrs, "ra");
+		manage_indexed_stack(&env->sdl, &env->a, &env->b, "ra");
 	}
 	else if (a < b && b > c && c > a)
 	{
-		instrs = add_instr(instrs, "sa");
-		instrs = add_instr(instrs, "ra");
-		manage_instruction_indexed_stack(data, sa, sb, "sa");
-		manage_instruction_indexed_stack(data, sa, sb, "ra");
+		env->instrs = add_instr(env->instrs, "sa");
+		env->instrs = add_instr(env->instrs, "ra");
+		manage_indexed_stack(&env->sdl, &env->a, &env->b, "sa");
+		manage_indexed_stack(&env->sdl, &env->a, &env->b, "ra");
 	}
 	else if (a < b && b > c && c < a)
 	{
-		instrs = add_instr(instrs, "rra");
-		manage_instruction_indexed_stack(data, sa, sb, "rra");
+		env->instrs = add_instr(env->instrs, "rra");
+		manage_indexed_stack(&env->sdl, &env->a, &env->b, "rra");
 	}
-	return (instrs);
+	return (env->instrs);
 }
 
 char	is_option_activated(char option, int option_index)
@@ -399,14 +398,11 @@ char	is_option_activated(char option, int option_index)
 
 int	main(int ac, char **av)
 {
-	int				i;
-	t_indexed_stack	a;
-	t_indexed_stack	b;
-	t_instruction	*instrs;
-	t_sdl			sdl_tools;
+	int		i;
+	t_env	env;
 
-	instrs = NULL;
-	sdl_tools.options = 0;
+	env.instrs = NULL;
+	env.sdl.options = 0;
 	if (ac < 2)
 		return (0);
 	else
@@ -421,66 +417,66 @@ int	main(int ac, char **av)
 					++av;
 					--ac;
 					--i;
-					sdl_tools.options |= 1;
+					env.sdl.options |= 1;
 				}
 				else if (ft_strequ(av[i], "-c"))
 				{
 					++av;
 					--ac;
 					--i;
-					sdl_tools.options |= 2;
+					env.sdl.options |= 2;
 				}     
 			}
 			++i;
 		}
 		if (ac < 2)
 			return (0);
-		a.tab = (t_indexed_value *)malloc((ac - 1) * sizeof(t_indexed_value));
-		a.top = -1;
-		b.tab = (t_indexed_value *)malloc((ac - 1) * sizeof(t_indexed_value));
-		b.top = -1;
+		env.a.tab = (t_indexed_value *)malloc((ac - 1) * sizeof(t_indexed_value));
+		env.a.top = -1;
+		env.b.tab = (t_indexed_value *)malloc((ac - 1) * sizeof(t_indexed_value));
+		env.b.top = -1;
 		
 		i = ac - 1;
 		while (i > 0)
 		{
 			is_valid_args(av[i]);
-			a.tab[ac - i - 1].value = ft_atoi(av[i]);
-			a.tab[ac - i - 1].index = ac - i - 1;
-			++a.top;
-			is_doubling_indexed(a);
+			env.a.tab[ac - i - 1].value = ft_atoi(av[i]);
+			env.a.tab[ac - i - 1].index = ac - i - 1;
+			++env.a.top;
+			is_doubling_indexed(env.a);
 			--i;
 		}
-		if (is_option_activated(sdl_tools.options, V_OPTION))
-			init_sdl(&sdl_tools);
-		merge_sort(a.tab, 0, ac - 2, 1);
+		if (is_option_activated(env.sdl.options, V_OPTION))
+			init_sdl(&env.sdl);
+		merge_sort(env.a.tab, 0, ac - 2, 1);
 		i = 0;
 		while (i < ac - 1)
 		{
-			a.tab[i].equiv = i;
+			env.a.tab[i].equiv = i;
 			++i;
 		}	
-		merge_sort(a.tab, 0, ac - 2, 0);
-		if (is_sorted_indexed_array(a.tab, ac - 1))
+		merge_sort(env.a.tab, 0, ac - 2, 0);
+		if (is_sorted_indexed_array(env.a.tab, ac - 1))
 			return (0);
 		else
 		{   
 			if (ac - 1 == 3)
-				instrs = three_num(&sdl_tools, a.tab[2].value, a.tab[1].value, a.tab[0].value, &a, &b, instrs);
+				env.instrs = three_num(&env, env.a.tab[2].value, env.a.tab[1].value, env.a.tab[0].value);
 			else if (ac - 1 <= 10)
-				instrs = complex_sort(&sdl_tools, &a, &b, 1, ac - 1, instrs);
+				env.instrs = complex_sort(&env, 1, ac - 1);
 			else if (ac - 1 <= 100)
-				instrs = complex_sort(&sdl_tools, &a, &b, 5, ac - 1, instrs);
+				env.instrs = complex_sort(&env, 5, ac - 1);
 			else
-				instrs = complex_sort(&sdl_tools, &a, &b, 11, ac - 1, instrs);
+				env.instrs = complex_sort(&env, 11, ac - 1);
 		}
-		while (b.top > -1)
+		while (env.b.top > -1)
 		{
-			instrs = add_instr(instrs, "pa");
-			manage_instruction_indexed_stack(&sdl_tools, &a, &b, "pa");
+			env.instrs = add_instr(env.instrs, "pa");
+			manage_indexed_stack(&env.sdl, &env.a, &env.b, "pa");
 		}
-		print_instrs(instrs);
-		if (is_option_activated(sdl_tools.options, V_OPTION))
-			loop_program(&sdl_tools);
+		print_instrs(env.instrs);
+		if (is_option_activated(env.sdl.options, V_OPTION))
+			loop_program(&env.sdl);
 		/*miss free*/
 	}
 	return (0);

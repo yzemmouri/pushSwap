@@ -14,7 +14,7 @@ SRC_PUSH	= 	push_swap.c\
 				is_valid_args.c\
 				error.c\
 				is_int_range.c\
-				manage_instruction_indexed_stack.c\
+				manage_indexed_stack.c\
 				is_sorted_array.c\
 				visualisator.c\
 			

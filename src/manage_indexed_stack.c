@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   manage_instruction_indexed_stack.c                 :+:      :+:    :+:   */
+/*   manage_indexed_stack.c                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yzemmour <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -85,11 +85,11 @@ void	rot_instr(t_indexed_stack *s, int to_up)
 
 void	rot_rot_instr(t_indexed_stack *a, t_indexed_stack *b, int to_up)
 {
-	rot_instr(a->tab, to_up);
-	rot_instr(b->tab, to_up);
+	rot_instr(a, to_up);
+	rot_instr(b, to_up);
 }
 
-void	manage_instruction_indexed_stack(t_sdl *data,
+void	manage_indexed_stack(t_sdl *data,
 	t_indexed_stack *sa, t_indexed_stack *sb,
 	char *instr)
 {

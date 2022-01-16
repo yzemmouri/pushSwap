@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   visualisator.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yzemmour <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/01/17 00:57:39 by yzemmour          #+#    #+#             */
+/*   Updated: 2022/01/17 00:57:41 by yzemmour         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../push_swap.h"
 
 void			sdl_error(char *message)
@@ -21,8 +33,7 @@ void    event_listner()
         if ((event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
                     || event.type == SDL_QUIT)
         {
-            // // ft_free_obj(data);
-            // prog_launched = SDL_FALSE;
+            // free
             exit(1);
         }
     }
@@ -63,7 +74,7 @@ void			init_sdl(t_sdl *data)
      if( TTF_Init() != 0)
          sdl_error("Font init error");
 
-    data->font = TTF_OpenFont("/Library/Fonts/Arial.ttf", 500);
+    data->font = TTF_OpenFont("/Library/Fonts/Arial.ttf", 58);
 
     if (data->font == NULL)
     {
@@ -86,7 +97,7 @@ if (is_option_activated(data->options, C_OPTION))
 // as TTF_RenderText_Solid could only be used on
 // SDL_Surface then you have to create the surface first
 SDL_Surface* surfaceMessage =
-    TTF_RenderText_Solid(data->font, str, white); 
+    TTF_RenderText_Blended(data->font, str, white); 
 
 // now you can convert it into a texture
 SDL_Texture* Message = SDL_CreateTextureFromSurface(data->rend, surfaceMessage);
@@ -94,8 +105,8 @@ SDL_Texture* Message = SDL_CreateTextureFromSurface(data->rend, surfaceMessage);
 SDL_Rect Message_rect; //create a rect
 Message_rect.x = x;  //controls the rect's x coordinate 
 Message_rect.y = 0; // controls the rect's y coordinte
-Message_rect.w = STACK_W - 80; // controls the width of the rect
-Message_rect.h = WIN_H - STACK_H; // controls the height of the rect
+Message_rect.w = surfaceMessage->w; // controls the width of the rect
+Message_rect.h = surfaceMessage->h; // controls the height of the rect
 
 // (0,0) is on the top left of the window/screen,
 // think a rect as the text's box,

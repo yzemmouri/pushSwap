@@ -18,7 +18,7 @@ typedef struct              s_instruction
 {
     char                    *value;
     struct  s_instruction   *next;
-}                           t_instruction;
+}                           t_instr;
 
 
 typedef struct s_stack
@@ -64,6 +64,13 @@ typedef struct s_sdl
     TTF_Font            *font;
 }               t_sdl;
 
+typedef struct s_env
+{
+    t_indexed_stack	a;
+	t_indexed_stack	b;
+	t_instr	*instrs;
+	t_sdl			sdl;
+}               t_env;
 
 void    is_valid_args(char *arg);
 void    is_doubling(t_stack s);
@@ -72,7 +79,7 @@ int     is_valid_instruction(char *instr);
 void    error(char *msg);
 void    is_int_range(char *number, char min_int[11], char max_int[10]);
 void    manage_instruction(t_stack *sa, t_stack *sb, char *instr);
-void    manage_instruction_indexed_stack(t_sdl *data, t_indexed_stack *sa, t_indexed_stack *sb, char *instr);
+void    manage_indexed_stack(t_sdl *data, t_indexed_stack *sa, t_indexed_stack *sb, char *instr);
 int     is_sorted_array(int *a, int n);
 int     is_sorted_indexed_array(t_indexed_value *a, int n);
 void    merge_sort(t_indexed_value *stack, int l, int r, int by_val);
