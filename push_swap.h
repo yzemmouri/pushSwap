@@ -5,8 +5,7 @@
 # define WIN_H       1100
 # define STACK_H     1000
 #define STACK_W 640
-# define V_OPTION 0
-# define C_OPTION 1
+
 #include "./libft/libft.h"
 #include "SDL2/SDL.h"
 # include "SDL2/SDL_ttf.h"
@@ -29,6 +28,7 @@ typedef struct s_stack
 
 typedef struct  s_indexed_value
 {
+    int keep_in_a;
     int equiv;
     int index;
     int value;
@@ -60,7 +60,8 @@ typedef struct s_sdl
 {
     SDL_Window			*win;
 	SDL_Renderer		*rend;
-    char              options:2;
+    int                 is_visu;
+    int                 vis_col;
     TTF_Font            *font;
 }               t_sdl;
 

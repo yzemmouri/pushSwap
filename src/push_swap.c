@@ -391,46 +391,20 @@ t_instr	*three_num(t_env *env, int a, int b, int c)
 	return (env->instrs);
 }
 
-char	is_option_activated(char option, int option_index)
-{
-	return ((option >> option_index) & 1);
-}
-
 int	main(int ac, char **av)
 {
 	int		i;
 	t_env	env;
+	int		opts_count;
 
 	env.instrs = NULL;
-	env.sdl.options = 0;
+	opts_count = 0;
+	env.sdl.is_visu = 0;
+	env.sdl.vis_col = 0;
 	if (ac < 2)
 		return (0);
 	else
 	{
-		i = 1;
-		while (i <= 2)
-		{
-			if (av[i][0] == '-')
-			{
-				if (ft_strequ(av[i], "-v"))
-				{
-					++av;
-					--ac;
-					--i;
-					env.sdl.options |= 1;
-				}
-				else if (ft_strequ(av[i], "-c"))
-				{
-					++av;
-					--ac;
-					--i;
-					env.sdl.options |= 2;
-				}     
-			}
-			++i;
-		}
-		if (ac < 2)
-			return (0);
 		env.a.tab = (t_indexed_value *)malloc((ac - 1) * sizeof(t_indexed_value));
 		env.a.top = -1;
 		env.b.tab = (t_indexed_value *)malloc((ac - 1) * sizeof(t_indexed_value));
@@ -439,6 +413,20 @@ int	main(int ac, char **av)
 		i = ac - 1;
 		while (i > 0)
 		{
+			if (ft_strequ(av[i], "-v"))
+			{
+				opts_count++;
+				env.sdl.is_visu = 1;
+				--i;
+				continue ;
+			}
+			if (ft_strequ(av[i], "-c"))
+			{
+				opts_count++;
+				env.sdl.vis_col = 1;
+				--i;
+				continue ;
+			}
 			is_valid_args(av[i]);
 			env.a.tab[ac - i - 1].value = ft_atoi(av[i]);
 			env.a.tab[ac - i - 1].index = ac - i - 1;
@@ -446,7 +434,9 @@ int	main(int ac, char **av)
 			is_doubling_indexed(env.a);
 			--i;
 		}
-		if (is_option_activated(env.sdl.options, V_OPTION))
+		if (ac - opts_count - 1 < 2)
+			return (0);
+		if (env.sdl.is_visu)
 			init_sdl(&env.sdl);
 		merge_sort(env.a.tab, 0, ac - 2, 1);
 		i = 0;
@@ -475,7 +465,7 @@ int	main(int ac, char **av)
 			manage_indexed_stack(&env.sdl, &env.a, &env.b, "pa");
 		}
 		print_instrs(env.instrs);
-		if (is_option_activated(env.sdl.options, V_OPTION))
+		if (env.sdl.is_visu)
 			loop_program(&env.sdl);
 		/*miss free*/
 	}

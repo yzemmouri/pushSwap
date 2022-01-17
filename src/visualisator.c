@@ -92,7 +92,7 @@ void            write_text(t_sdl *data,char *str, int x)
 // maxing out all would give you the color white,
 // and it will be your text's color
 SDL_Color white = {255, 255, 255};
-if (is_option_activated(data->options, C_OPTION))
+if (data->vis_col)
     white = (SDL_Color){255, 0, 255};
 // as TTF_RenderText_Solid could only be used on
 // SDL_Surface then you have to create the surface first
@@ -134,7 +134,7 @@ void            draw(t_sdl *data, t_indexed_stack a, t_indexed_stack b)
     Visualisator(data, b, STACK_W + 40, a.top + b.top + 2);
     write_text(data, "Stack A", 0);
     write_text(data, "Stack B", STACK_W + 40);
-    if (is_option_activated(data->options, C_OPTION))
+    if (data->vis_col)
     {
         if (SDL_SetRenderDrawColor(data->rend, 255, 0, 255, 255) != 0)
             sdl_error("Get color failed");
@@ -165,7 +165,7 @@ void			Visualisator(t_sdl *data, t_indexed_stack s, int x, int height)
         h = STACK_H / height;
         while (j <= s.top)
         {
-            if (is_option_activated(data->options, C_OPTION))
+            if (data->vis_col)
             {
                 color = rgb((double)(s.tab[j].equiv) / height);
                 if (SDL_SetRenderDrawColor(data->rend,

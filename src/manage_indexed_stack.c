@@ -115,6 +115,6 @@ void	manage_indexed_stack(t_sdl *data,
 		rot_instr(sb, 0);
 	else if (ft_strcmp(instr, "rrr") == 0)
 		rot_rot_instr(sa, sb, 0);
-	if (is_option_activated(data->options, V_OPTION))
+	if (data->is_visu)
 		draw(data, *sa, *sb);
 }
