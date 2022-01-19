@@ -79,10 +79,10 @@ $(PROG_CHECKER) : $(LIBFT_LIB) $(OBJ_CHECKER)
 
 
 $(OBJ_DIR_PUSH)/%.o : $(SRC_DIR)/%.c $(HEADER)
-	@gcc -c  $(INCLUDE) $< -o $@ 
+	@gcc -c  $(CFLAGS) $(INCLUDE) $< -o $@ 
 
 $(OBJ_DIR_CHECKER)/%.o : $(SRC_DIR)/%.c $(HEADER)
-	@gcc -c  $(INCLUDE) $< -o $@
+	@gcc -c  $(CFLAGS) $(INCLUDE) $< -o $@
 
 clean :
 	@make clean -C ./libft/

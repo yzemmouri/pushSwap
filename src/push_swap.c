@@ -77,7 +77,7 @@ t_instr	*put_elem_top_b(t_env *env, int num, t_instr *instr_b)
 	return (instr_b);
 }
 
-t_instr	*put_top_b_opt(t_env *env, int n, t_instr *instr_a, t_instr *instr_b)
+t_instr	*put_top_b_opt(t_env *env, int n, t_instr *instr_a, t_instr *instr_b, int calc)
 {
 	int		j;
 	int		a_instr_len;
@@ -113,7 +113,8 @@ t_instr	*put_top_b_opt(t_env *env, int n, t_instr *instr_a, t_instr *instr_b)
 		while (j > 0)
 		{
 			instr_b = add_instr(instr_b, "rb");
-			manage_indexed_stack(&env->sdl, &env->a, &env->b, "rb");
+			if (calc)
+				manage_indexed_stack(&env->sdl, &env->a, &env->b, "rb");
 			j--;
 		}
 	}
@@ -123,14 +124,15 @@ t_instr	*put_top_b_opt(t_env *env, int n, t_instr *instr_a, t_instr *instr_b)
 		while (j > 0)
 		{
 			instr_b = add_instr(instr_b, "rrb");
-			manage_indexed_stack(&env->sdl, &env->a, &env->b, "rrb");
+			if (calc)
+				manage_indexed_stack(&env->sdl, &env->a, &env->b, "rrb");
 			j--;
 		}
 	}
 	return (instr_b);
 }
 
-t_instr	*put_elem_top_a(t_env *env, int num, t_instr *instr)
+t_instr	*put_elem_top_a(t_env *env, int num, t_instr *instr, int calc)
 {
 	int	j;
 
@@ -140,7 +142,8 @@ t_instr	*put_elem_top_a(t_env *env, int num, t_instr *instr)
 		while (j > 0)
 		{
 			instr = add_instr(instr, "ra");
-			manage_indexed_stack(&env->sdl, &env->a, &env->b, "ra");
+			if (calc)
+				manage_indexed_stack(&env->sdl, &env->a, &env->b, "ra");
 			j--;
 		}
 	}
@@ -150,41 +153,17 @@ t_instr	*put_elem_top_a(t_env *env, int num, t_instr *instr)
 		while (j > 0)
 		{
 			instr = add_instr(instr, "rra");
-			manage_indexed_stack(&env->sdl, &env->a, &env->b, "rra");
+			if (calc)
+				manage_indexed_stack(&env->sdl, &env->a, &env->b, "rra");
 			j--;
 		}
 	}
 	return (instr);
 }
 
-int	best_elem(t_indexed_stack *sa, int start, int max)
-{
-	int	t_top;
-	int	t_bottom;
-	int	index;
-  
-	t_top = sa->top;
-	t_bottom = 0;
-	index = -1;
-	while (t_top >= t_bottom)
-	{
-		if (sa->tab[t_bottom].equiv >= start && sa->tab[t_bottom].equiv <= max)
-		{
-			index = t_bottom;
-			break ;
-		}
-		if (sa->tab[t_top].equiv >= start && sa->tab[t_top].equiv <= max)
-		{
-			index = t_top;
-			break ;
-		}
-		t_top--;
-		t_bottom++;
-	}
-	return (index);   
-}
 
-t_instr	*put_elem_position(t_env *env, int num, t_instr *instr_a, t_instr *instr_b)
+
+t_instr	*put_elem_position(t_env *env, int num, t_instr *instr_a, t_instr *instr_b, int calc)
 {
 	int	i;
 
@@ -193,7 +172,7 @@ t_instr	*put_elem_position(t_env *env, int num, t_instr *instr_a, t_instr *instr
 	{
 		if (env->b.tab[i].equiv < num && env->b.tab[i + 1].equiv > num)
 		{
-			instr_b = put_top_b_opt(env, i, instr_a, instr_b);
+			instr_b = put_top_b_opt(env, i, instr_a, instr_b, calc);
 			break ;
 		}
 		i--;
@@ -303,14 +282,73 @@ t_instr	*free_instrs(t_instr *instrs)
 	return (instrs);
 }
 
+int list_length(t_instr *list)
+{
+  t_instr *cur = list;
+  int size = 0;
+
+  while (cur != NULL)
+  {
+    ++size;
+    cur = cur->next;
+  }
+  return size;
+}
+
+int	best_elem(t_env *env)
+{
+	t_instr			*instrs_a;
+	t_instr 		*instrs_b;
+	int i;
+	int min_num_op;
+	int len;
+	int best_index;
+	int new_max_min;
+
+	instrs_a = NULL;
+	instrs_b = NULL;
+
+	i = env->a.top;
+	min_num_op = 10000000;
+	best_index = 0;
+	while (i >= 0)
+	{
+		instrs_a = put_elem_top_a(env, i, instrs_a, 0);
+			len = list_length(instrs_a);
+		if (env->b.top >= 1)
+		{
+			new_max_min = is_new_min_max(env->b, env->a.tab[i].equiv);
+			if (new_max_min != -1)
+			{
+				instrs_b = put_top_b_opt(env, new_max_min, instrs_a, instrs_b, 0);
+				len += list_length(instrs_b);
+			}
+			else
+			{
+				instrs_b = put_elem_position(env, env->a.tab[i].equiv, instrs_a, instrs_b, 0);
+				len += list_length(instrs_b);
+			}
+		}
+		if (len < min_num_op)
+		{
+			best_index = i;
+			min_num_op = len;
+		}
+		instrs_a = free_instrs(instrs_a);
+		instrs_b = free_instrs(instrs_b);
+		i--;
+	}
+	return (best_index);   
+}
+
 t_instr	*complex_sort(t_env *env, int num_chunk, int total_num)
 {
 	int				len_chunk;
 	int				new_max_min;
 	int				max;
 	int				index;
-	t_instr	*instrs_a;
-	t_instr 	*instrs_b;
+	t_instr			*instrs_a;
+	t_instr 		*instrs_b;
 
 	len_chunk = total_num / num_chunk;
 	max = len_chunk - 1;
@@ -318,26 +356,26 @@ t_instr	*complex_sort(t_env *env, int num_chunk, int total_num)
 	instrs_b = NULL;
 	while(env->a.top >= 0)
 	{
-		index = best_elem(&env->a, max - len_chunk + 1, max);
-		if (index != -1)
-		{
-			instrs_a = put_elem_top_a(env, index, instrs_a);
+		// if (index != -1)
+		// {
+			index = best_elem(env);
+			instrs_a = put_elem_top_a(env, index, instrs_a, 1);
 			if (env->b.top >= 1)
 			{
 				new_max_min = is_new_min_max(env->b, env->a.tab[env->a.top].equiv);
 				if (new_max_min != -1)
-					instrs_b = put_top_b_opt(env, new_max_min, instrs_a, instrs_b);
+					instrs_b = put_top_b_opt(env, new_max_min, instrs_a, instrs_b, 1);
 				else
-					instrs_b = put_elem_position(env, env->a.tab[env->a.top].equiv, instrs_a, instrs_b);
+					instrs_b = put_elem_position(env, env->a.tab[env->a.top].equiv, instrs_a, instrs_b, 1);
 			}
 			env->instrs = fusion(env->instrs, instrs_a, instrs_b);
 			instrs_a = free_instrs(instrs_a);
 			instrs_b = free_instrs(instrs_b);
 			env->instrs = add_instr(env->instrs, "pb");
 			manage_indexed_stack(&env->sdl, &env->a, &env->b, "pb");
-		}
-		else
-			max = max + len_chunk;
+		// }
+		// else
+		// 	max = max + len_chunk;
 	}
 	env->instrs = put_elem_top_b(env, find_max(env->b), env->instrs);
 	
@@ -357,39 +395,95 @@ void	print_instrs(t_instr *instrs)
 }
 
 
-t_instr	*three_num(t_env *env, int a, int b, int c)
+/*********************************************************************************/
+/*********************************************************************************/
+
+int	markup_great_than(t_env *env, int start)
 {
-	if (a > b && b < c && c > a)
+	int				i;
+	int 			pos;
+	int				max;
+	int				len;
+
+	len = 0;
+	i = env->a.top;
+	max = env->a.tab[start].value;
+	env->a.tab[start].keep_in_a = 1;
+	while (i > 0)
 	{
-		env->instrs = add_instr(env->instrs, "sa");
-		manage_indexed_stack(&env->sdl, &env->a, &env->b, "sa");
+		pos = (i + start) % (env->a.top + 1);
+		if (env->a.tab[pos].value > max)
+		{
+			len++;
+			max = env->a.tab[pos].value;
+			env->a.tab[pos].keep_in_a = 1;
+		}
+		else
+			env->a.tab[pos].keep_in_a = 0;
+		i--;
 	}
-	else if (a > b && b > c && c < a)
-	{
-		env->instrs = add_instr(env->instrs, "sa");
-		env->instrs = add_instr(env->instrs, "rra");
-		manage_indexed_stack(&env->sdl, &env->a, &env->b, "sa");
-		manage_indexed_stack(&env->sdl, &env->a, &env->b, "rra");
-	}
-	else if (a > b && b < c && c < a)
-	{
-		env->instrs = add_instr(env->instrs, "ra");
-		manage_indexed_stack(&env->sdl, &env->a, &env->b, "ra");
-	}
-	else if (a < b && b > c && c > a)
-	{
-		env->instrs = add_instr(env->instrs, "sa");
-		env->instrs = add_instr(env->instrs, "ra");
-		manage_indexed_stack(&env->sdl, &env->a, &env->b, "sa");
-		manage_indexed_stack(&env->sdl, &env->a, &env->b, "ra");
-	}
-	else if (a < b && b > c && c < a)
-	{
-		env->instrs = add_instr(env->instrs, "rra");
-		manage_indexed_stack(&env->sdl, &env->a, &env->b, "rra");
-	}
-	return (env->instrs);
+	return (len);
 }
+
+int	markup_by_index(t_env *env, int start)
+{
+	int				i;
+	int 			pos;
+	int				index;
+	int				len;
+
+	len = 0;
+	i = env->a.top;
+	index = env->a.tab[start].equiv;
+	env->a.tab[start].keep_in_a = 1;
+	while (i > 0)
+	{
+		pos = (i + start) % (env->a.top + 1);
+		if (env->a.tab[pos].value == index + 1)
+		{
+			len++;
+			index = env->a.tab[pos].index;
+			env->a.tab[pos].keep_in_a = 1;
+		}
+		else
+			env->a.tab[pos].keep_in_a = 0;
+		i--;
+	}
+	return (len);
+}
+
+int	best_markup_great_than(t_env *env)
+{
+	int best;
+	int len;
+	int index;
+	int i;
+
+	best = -1;
+	i = env->a.top;
+	while (i >= 0)
+	{
+		len = markup_great_than(env, i);
+		if (len > best)
+		{
+			best = len;
+			index = env->a.tab[i].equiv;
+		}
+		else if (len == best)
+		{
+			if (env->a.tab[i].equiv < index)
+			{
+				best = len;
+				index = env->a.tab[i].equiv;
+			}
+		}
+		i--;
+	}
+	return (index);
+}
+
+/*********************************************************************************/
+/*********************************************************************************/
 
 int	main(int ac, char **av)
 {
@@ -400,7 +494,7 @@ int	main(int ac, char **av)
 	env.instrs = NULL;
 	opts_count = 0;
 	env.sdl.is_visu = 0;
-	env.sdl.vis_col = 0;
+	env.sdl.vis_col = 1;
 	if (ac < 2)
 		return (0);
 	else
@@ -413,29 +507,14 @@ int	main(int ac, char **av)
 		i = ac - 1;
 		while (i > 0)
 		{
-			if (ft_strequ(av[i], "-v"))
-			{
-				opts_count++;
-				env.sdl.is_visu = 1;
-				--i;
-				continue ;
-			}
-			if (ft_strequ(av[i], "-c"))
-			{
-				opts_count++;
-				env.sdl.vis_col = 1;
-				--i;
-				continue ;
-			}
 			is_valid_args(av[i]);
 			env.a.tab[ac - i - 1].value = ft_atoi(av[i]);
 			env.a.tab[ac - i - 1].index = ac - i - 1;
+			env.a.tab[ac - i - 1].keep_in_a = 0;
 			++env.a.top;
 			is_doubling_indexed(env.a);
 			--i;
 		}
-		if (ac - opts_count - 1 < 2)
-			return (0);
 		if (env.sdl.is_visu)
 			init_sdl(&env.sdl);
 		merge_sort(env.a.tab, 0, ac - 2, 1);
@@ -446,18 +525,17 @@ int	main(int ac, char **av)
 			++i;
 		}	
 		merge_sort(env.a.tab, 0, ac - 2, 0);
+
 		if (is_sorted_indexed_array(env.a.tab, ac - 1))
 			return (0);
 		else
 		{   
-			if (ac - 1 == 3)
-				env.instrs = three_num(&env, env.a.tab[2].value, env.a.tab[1].value, env.a.tab[0].value);
-			else if (ac - 1 <= 10)
+			if (ac - 1 <= 500)
 				env.instrs = complex_sort(&env, 1, ac - 1);
-			else if (ac - 1 <= 100)
-				env.instrs = complex_sort(&env, 5, ac - 1);
-			else
-				env.instrs = complex_sort(&env, 11, ac - 1);
+			// else if (ac - 1 <= 100)
+			// 	env.instrs = complex_sort(&env, 5, ac - 1);
+			// else
+			// 	env.instrs = complex_sort(&env, 11, ac - 1);
 		}
 		while (env.b.top > -1)
 		{

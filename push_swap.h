@@ -70,6 +70,7 @@ typedef struct s_env
     t_indexed_stack	a;
 	t_indexed_stack	b;
 	t_instr	*instrs;
+    t_instr *instr_index;
 	t_sdl			sdl;
 }               t_env;
 
