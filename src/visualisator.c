@@ -148,7 +148,8 @@ void            draw(t_sdl *data, t_indexed_stack a, t_indexed_stack b)
         sdl_error("Get line failed");
     SDL_RenderPresent(data->rend);
     event_listner();
-    SDL_Delay(convert_range(a.top + b.top + 2, 0, 500, 100, 0));
+    // SDL_Delay(convert_range(a.top + b.top + 2, 0, 500, 100, 0));
+    SDL_Delay(2);
     event_listner();
     // printf("draaw\n");
 }

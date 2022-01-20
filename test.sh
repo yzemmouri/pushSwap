@@ -18,7 +18,7 @@ LIMIT=700
 FILE=problem_100
 SUM=0
 
-for i in {1..50}
+for i in {1..20}
 do
 		export ARG=`ruby -e "puts (1..500).to_a.shuffle.join(' ')"`
 		if ./push_swap $ARG | ./checker $ARG | grep -q KO

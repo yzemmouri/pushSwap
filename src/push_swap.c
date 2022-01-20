@@ -110,6 +110,7 @@ t_instr	*put_top_b_opt(t_env *env, int n, t_instr *instr_a, t_instr *instr_b, in
 	if (rb_len <= rrb_len)
 	{
 		j = env->b.top - n;
+		env->temp = j;
 		while (j > 0)
 		{
 			instr_b = add_instr(instr_b, "rb");
@@ -121,6 +122,7 @@ t_instr	*put_top_b_opt(t_env *env, int n, t_instr *instr_a, t_instr *instr_b, in
 	else
 	{
 		j = n + 1;
+		env->temp = j;
 		while (j > 0)
 		{
 			instr_b = add_instr(instr_b, "rrb");
@@ -139,6 +141,7 @@ t_instr	*put_elem_top_a(t_env *env, int num, t_instr *instr, int calc)
 	if (num >= (int)(env->a.top / 2))
 	{
 		j = env->a.top - num;
+		env->temp = j;
 		while (j > 0)
 		{
 			instr = add_instr(instr, "ra");
@@ -150,6 +153,7 @@ t_instr	*put_elem_top_a(t_env *env, int num, t_instr *instr, int calc)
 	else
 	{
 		j = num + 1;
+		env->temp = j;
 		while (j > 0)
 		{
 			instr = add_instr(instr, "rra");
@@ -309,7 +313,7 @@ int	best_elem(t_env *env)
 	instrs_b = NULL;
 
 	i = env->a.top;
-	min_num_op = 10000000;
+	min_num_op = 100000000;
 	best_index = 0;
 	while (i >= 0)
 	{
@@ -334,6 +338,7 @@ int	best_elem(t_env *env)
 			best_index = i;
 			min_num_op = len;
 		}
+		len = 0;
 		instrs_a = free_instrs(instrs_a);
 		instrs_b = free_instrs(instrs_b);
 		i--;
@@ -494,7 +499,7 @@ int	main(int ac, char **av)
 	env.instrs = NULL;
 	opts_count = 0;
 	env.sdl.is_visu = 0;
-	env.sdl.vis_col = 1;
+	env.sdl.vis_col = 0;
 	if (ac < 2)
 		return (0);
 	else

@@ -72,6 +72,7 @@ typedef struct s_env
 	t_instr	*instrs;
     t_instr *instr_index;
 	t_sdl			sdl;
+    int             temp;
 }               t_env;
 
 void    is_valid_args(char *arg);
