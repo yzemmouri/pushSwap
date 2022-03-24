@@ -17,6 +17,7 @@ void	is_int_range(char *number, char min_int[11], char max_int[10])
 	int		length;
 	char	is_negative;
 	int		i;
+	char	*p;
 
 	if (number[0] == '-')
 		is_negative = 1;
@@ -29,24 +30,13 @@ void	is_int_range(char *number, char min_int[11], char max_int[10])
 		error("Error");
 	if ((is_negative && length == 11) || (!is_negative && length == 10))
 	{
-		i = 0;
+		i = -1;
 		if (is_negative)
-		{
-			while (i < length)
-			{
-				if (number[i] > min_int[i])
-					error("Error");
-				++i;
-			}
-		}
+			p = min_int;
 		else
-		{
-			while (i < length)
-			{
-				if (number[i] > max_int[i])
-					error("Error");
-				++i;
-			}
-		}
+			p = max_int;
+		while (++i < length)
+			if (number[i] > p[i])
+				error("Error");
 	}
 }

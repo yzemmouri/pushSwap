@@ -12,542 +12,100 @@
 
 #include "../push_swap.h"
 
-t_instr	*add_instr(t_instr *instrs, char *oper)
+// 4 3 2 1 5
+// 4 3 5 2 1
+// 1 2 5
+// 3 4
+int	five_max_min(t_indexed_stack s, int num)
 {
-	t_instr	*new;
-	t_instr	*temp;
-
-	// - error alloctatiom
-	if (oper)
-	{
-		new = malloc(sizeof(t_instr));
-		if (new)
-		{
-			new->value = malloc(ft_strlen(oper) + 1);
-			if (new->value)
-			{
-				ft_strcpy(new->value, oper);
-				new->next = NULL;
-			}
-		}
-	}
-	if (instrs == NULL)
-		instrs = new;
-	else
-	{
-		temp = instrs;
-		while (temp->next != NULL)
-			temp = temp->next;
-		temp->next = new;
-	}
-	return (instrs);
+	if (s.tab[0].value < num)
+		return (1);
+	if (s.tab[s.top - 1].value > num)
+		return (-1);
+	return (0);
 }
 
-int	max(int a, int b)
+void	insert_numbers(t_env *env, int ac, char **av)
 {
-	if (a >= b)
-		return (a);
-	return (b);
+	int		i;
+
+	env->a.tab = (t_indexed_value *)malloc((ac - 1 - env->fl)
+			* sizeof(t_indexed_value));
+	env->a.top = -1;
+	env->b.tab = (t_indexed_value *)malloc((ac - 1 - env->fl)
+			* sizeof(t_indexed_value));
+	env->b.top = -1;
+	i = ac - 1 + 1;
+	while (--i > env->fl)
+	{
+		is_valid_args(av[i]);
+		env->a.tab[ac - i - 1].value = ft_atoi(av[i]);
+		env->a.tab[ac - i - 1].index = ac - i - 1;
+		++env->a.top;
+		is_doubling_indexed(env->a);
+	}
+	if (env->sdl.is_visu)
+		init_sdl(&env->sdl);
+	merge_sort(env->a.tab, 0, ac - 2 - env->fl, 1);
+	i = -1;
+	while (++i < ac - 1 - env->fl)
+		env->a.tab[i].equiv = i;
+	merge_sort(env->a.tab, 0, ac - 2 - env->fl, 0);
 }
 
-t_instr	*put_elem_top_b(t_env *env, int num, t_instr *instr_b)
+void	numbers_cases(t_env *env, int ac)
 {
-	int	j;
-
-	if (num >= ((env->b.top) / 2))
-	{
-		j = env->b.top - num;
-		while (j > 0)
-		{
-			instr_b = add_instr(instr_b, "rb");
-			manage_indexed_stack(&env->sdl, &env->a, &env->b, "rb");
-			j--;
-		}
-	}
-	else
-	{
-		j = num + 1;
-		while (j > 0)
-		{
-			instr_b = add_instr(instr_b, "rrb");
-			manage_indexed_stack(&env->sdl, &env->a, &env->b, "rrb");
-			j--;
-		}
-	}
-	return (instr_b);
+	if (ac - 1 == 3)
+		three_elems(env);
+	else if (ac -1 == 5)
+		five_elems(env);
+	else if (ac - 1 <= 500)
+		env->insts = complex_sort(env);
 }
 
-t_instr	*put_top_b_opt(t_env *env, int n, t_instr *instr_a, t_instr *instr_b, int calc)
+void	flags_args(t_env *env, int ac, char **av)
 {
-	int		j;
-	int		a_instr_len;
-	char	*a_instr_type;
-	int		rb_len;
-	int		rrb_len;
-
-	a_instr_len = 0;
-	rb_len = env->b.top - n;
-	rrb_len = n + 1;
-	if (instr_a)
+	env->fl = 0;
+	if (ac >= 2 && (ft_strcmp(av[1], "-v") == 0 || ft_strcmp(av[1], "-c") == 0))
 	{
-		a_instr_type = instr_a->value;
-		while (instr_a)
-		{
-			++a_instr_len;
-			instr_a = instr_a->next;
-		}
-		if (ft_strcmp(a_instr_type, "ra") == 0)
-		{
-			rb_len = max(a_instr_len + 1, rb_len);
-			rrb_len = a_instr_len + 1 + rrb_len;
-		}
-		else
-		{
-			rrb_len = max(a_instr_len + 1, rrb_len);
-			rb_len = a_instr_len + 1 + rb_len;
-		}
+		if (ft_strcmp(av[1], "-v") == 0)
+			env->sdl.is_visu = 1;
+		if (ft_strcmp(av[1], "-c") == 0)
+			env->sdl.vis_col = 1;
+		env->fl++;
 	}
-	if (rb_len <= rrb_len)
+	if (ac >= 3 && (ft_strcmp(av[2], "-c") == 0 || ft_strcmp(av[2], "-v") == 0))
 	{
-		j = env->b.top - n;
-		env->temp = j;
-		while (j > 0)
-		{
-			instr_b = add_instr(instr_b, "rb");
-			if (calc)
-				manage_indexed_stack(&env->sdl, &env->a, &env->b, "rb");
-			j--;
-		}
-	}
-	else
-	{
-		j = n + 1;
-		env->temp = j;
-		while (j > 0)
-		{
-			instr_b = add_instr(instr_b, "rrb");
-			if (calc)
-				manage_indexed_stack(&env->sdl, &env->a, &env->b, "rrb");
-			j--;
-		}
-	}
-	return (instr_b);
-}
-
-t_instr	*put_elem_top_a(t_env *env, int num, t_instr *instr, int calc)
-{
-	int	j;
-
-	if (num >= (int)(env->a.top / 2))
-	{
-		j = env->a.top - num;
-		env->temp = j;
-		while (j > 0)
-		{
-			instr = add_instr(instr, "ra");
-			if (calc)
-				manage_indexed_stack(&env->sdl, &env->a, &env->b, "ra");
-			j--;
-		}
-	}
-	else
-	{
-		j = num + 1;
-		env->temp = j;
-		while (j > 0)
-		{
-			instr = add_instr(instr, "rra");
-			if (calc)
-				manage_indexed_stack(&env->sdl, &env->a, &env->b, "rra");
-			j--;
-		}
-	}
-	return (instr);
-}
-
-
-
-t_instr	*put_elem_position(t_env *env, int num, t_instr *instr_a, t_instr *instr_b, int calc)
-{
-	int	i;
-
-	i = env->b.top - 1;
-	while (i >= 0)
-	{
-		if (env->b.tab[i].equiv < num && env->b.tab[i + 1].equiv > num)
-		{
-			instr_b = put_top_b_opt(env, i, instr_a, instr_b, calc);
-			break ;
-		}
-		i--;
-	}
-	return (instr_b);
-}
-
-int	find_max(t_indexed_stack s)
-{
-	int	i;
-	int	max;
-	int	index;
-
-	max = s.tab[s.top].equiv;
-	index = s.top;
-	i = s.top - 1;
-	while (i >= 0)
-	{
-		if (s.tab[i].equiv > max)
-		{
-			max = s.tab[i].equiv;
-			index = i;
-		}
-		i--;
-	}
-	return (index);
-}
-
-int is_new_min_max(t_indexed_stack s, int num)
-{
-	int	i;
-	int max;
-	int index;
-	int is_min;
-	int is_max;
-
-	is_min = 1;
-	is_max = 1;
-	max = -1;
-	index = -1;
-	i = s.top;
-	while (i >= 0)
-	{
-		if (s.tab[i].equiv > num)
-			is_max = 0;
-		if (s.tab[i].equiv < num)
-			is_min = 0;
-		if (s.tab[i].equiv > max)
-		{
-			max = s.tab[i].equiv;
-			index = i;
-		}
-		i--;
-	}
-	if (is_min || is_max)
-		return (index);
-	return (-1);
-}
-
-t_instr	*fusion(t_instr *instrs, t_instr *instrs_a, t_instr *instrs_b)
-{
-	t_instr *tmp1;
-	t_instr *tmp2;
-
-	tmp1 = instrs_a;
-	tmp2 = instrs_b;
-	while (tmp1 && tmp2)
-	{
-		if (ft_strcmp(tmp1->value, "ra") == 0 && ft_strcmp(tmp2->value, "rb") == 0)
-			instrs = add_instr(instrs, "rr");
-		else if (ft_strcmp(tmp1->value, "rra") == 0 && ft_strcmp(tmp2->value, "rrb") == 0)
-			instrs = add_instr(instrs, "rrr");
-		else
-		{
-			instrs = add_instr(instrs, tmp2->value);
-			instrs = add_instr(instrs, tmp1->value);
-		}
-		tmp1 = tmp1->next;
-		tmp2 = tmp2->next;
-	}
-
-	while (tmp2)
-	{
-		instrs = add_instr(instrs, tmp2->value);
-		tmp2 = tmp2->next;
-	}
-	while (tmp1)
-	{
-		instrs = add_instr(instrs, tmp1->value);
-		tmp1 = tmp1->next;
-	}
-	return (instrs);
-}
-
-t_instr	*free_instrs(t_instr *instrs)
-{
-	t_instr *current;
-
-	while (instrs != NULL)
-	{
-		current = instrs;
-		free(current->value);
-		free(current);
-		instrs = instrs->next;
-	}
-	instrs = NULL;
-	return (instrs);
-}
-
-int list_length(t_instr *list)
-{
-  t_instr *cur = list;
-  int size = 0;
-
-  while (cur != NULL)
-  {
-    ++size;
-    cur = cur->next;
-  }
-  return size;
-}
-
-int	best_elem(t_env *env)
-{
-	t_instr			*instrs_a;
-	t_instr 		*instrs_b;
-	int i;
-	int min_num_op;
-	int len;
-	int best_index;
-	int new_max_min;
-
-	instrs_a = NULL;
-	instrs_b = NULL;
-
-	i = env->a.top;
-	min_num_op = 100000000;
-	best_index = 0;
-	while (i >= 0)
-	{
-		instrs_a = put_elem_top_a(env, i, instrs_a, 0);
-			len = list_length(instrs_a);
-		if (env->b.top >= 1)
-		{
-			new_max_min = is_new_min_max(env->b, env->a.tab[i].equiv);
-			if (new_max_min != -1)
-			{
-				instrs_b = put_top_b_opt(env, new_max_min, instrs_a, instrs_b, 0);
-				len += list_length(instrs_b);
-			}
-			else
-			{
-				instrs_b = put_elem_position(env, env->a.tab[i].equiv, instrs_a, instrs_b, 0);
-				len += list_length(instrs_b);
-			}
-		}
-		if (len < min_num_op)
-		{
-			best_index = i;
-			min_num_op = len;
-		}
-		len = 0;
-		instrs_a = free_instrs(instrs_a);
-		instrs_b = free_instrs(instrs_b);
-		i--;
-	}
-	return (best_index);   
-}
-
-t_instr	*complex_sort(t_env *env, int num_chunk, int total_num)
-{
-	int				len_chunk;
-	int				new_max_min;
-	int				max;
-	int				index;
-	t_instr			*instrs_a;
-	t_instr 		*instrs_b;
-
-	len_chunk = total_num / num_chunk;
-	max = len_chunk - 1;
-	instrs_a = NULL;
-	instrs_b = NULL;
-	while(env->a.top >= 0)
-	{
-		// if (index != -1)
-		// {
-			index = best_elem(env);
-			instrs_a = put_elem_top_a(env, index, instrs_a, 1);
-			if (env->b.top >= 1)
-			{
-				new_max_min = is_new_min_max(env->b, env->a.tab[env->a.top].equiv);
-				if (new_max_min != -1)
-					instrs_b = put_top_b_opt(env, new_max_min, instrs_a, instrs_b, 1);
-				else
-					instrs_b = put_elem_position(env, env->a.tab[env->a.top].equiv, instrs_a, instrs_b, 1);
-			}
-			env->instrs = fusion(env->instrs, instrs_a, instrs_b);
-			instrs_a = free_instrs(instrs_a);
-			instrs_b = free_instrs(instrs_b);
-			env->instrs = add_instr(env->instrs, "pb");
-			manage_indexed_stack(&env->sdl, &env->a, &env->b, "pb");
-		// }
-		// else
-		// 	max = max + len_chunk;
-	}
-	env->instrs = put_elem_top_b(env, find_max(env->b), env->instrs);
-	
-	return (env->instrs);
-}
-
-void	print_instrs(t_instr *instrs)
-{
-	t_instr *current;
-
-	current = instrs;
-   	while (current != NULL)
-	{
-		printf("%s\n", current->value);
-		current = current->next;
+		if (ft_strcmp(av[2], "-v") == 0)
+			env->sdl.is_visu = 1;
+		if (ft_strcmp(av[2], "-c") == 0)
+			env->sdl.vis_col = 1;
+		env->fl++;
 	}
 }
-
-
-/*********************************************************************************/
-/*********************************************************************************/
-
-int	markup_great_than(t_env *env, int start)
-{
-	int				i;
-	int 			pos;
-	int				max;
-	int				len;
-
-	len = 0;
-	i = env->a.top;
-	max = env->a.tab[start].value;
-	env->a.tab[start].keep_in_a = 1;
-	while (i > 0)
-	{
-		pos = (i + start) % (env->a.top + 1);
-		if (env->a.tab[pos].value > max)
-		{
-			len++;
-			max = env->a.tab[pos].value;
-			env->a.tab[pos].keep_in_a = 1;
-		}
-		else
-			env->a.tab[pos].keep_in_a = 0;
-		i--;
-	}
-	return (len);
-}
-
-int	markup_by_index(t_env *env, int start)
-{
-	int				i;
-	int 			pos;
-	int				index;
-	int				len;
-
-	len = 0;
-	i = env->a.top;
-	index = env->a.tab[start].equiv;
-	env->a.tab[start].keep_in_a = 1;
-	while (i > 0)
-	{
-		pos = (i + start) % (env->a.top + 1);
-		if (env->a.tab[pos].value == index + 1)
-		{
-			len++;
-			index = env->a.tab[pos].index;
-			env->a.tab[pos].keep_in_a = 1;
-		}
-		else
-			env->a.tab[pos].keep_in_a = 0;
-		i--;
-	}
-	return (len);
-}
-
-int	best_markup_great_than(t_env *env)
-{
-	int best;
-	int len;
-	int index;
-	int i;
-
-	best = -1;
-	i = env->a.top;
-	while (i >= 0)
-	{
-		len = markup_great_than(env, i);
-		if (len > best)
-		{
-			best = len;
-			index = env->a.tab[i].equiv;
-		}
-		else if (len == best)
-		{
-			if (env->a.tab[i].equiv < index)
-			{
-				best = len;
-				index = env->a.tab[i].equiv;
-			}
-		}
-		i--;
-	}
-	return (index);
-}
-
-/*********************************************************************************/
-/*********************************************************************************/
 
 int	main(int ac, char **av)
 {
-	int		i;
 	t_env	env;
-	int		opts_count;
 
-	env.instrs = NULL;
-	opts_count = 0;
-	env.sdl.is_visu = 0;
-	env.sdl.vis_col = 0;
-	if (ac < 2)
+	env.insts = NULL;
+	flags_args(&env, ac, av);
+	if (ac == 3 && env.sdl.vis_col && env.sdl.is_visu)
+		return (0);
+	else if (ac == 2 && (env.sdl.vis_col || env.sdl.is_visu))
+		return (0);
+	else if (ac < 2)
 		return (0);
 	else
 	{
-		env.a.tab = (t_indexed_value *)malloc((ac - 1) * sizeof(t_indexed_value));
-		env.a.top = -1;
-		env.b.tab = (t_indexed_value *)malloc((ac - 1) * sizeof(t_indexed_value));
-		env.b.top = -1;
-		
-		i = ac - 1;
-		while (i > 0)
-		{
-			is_valid_args(av[i]);
-			env.a.tab[ac - i - 1].value = ft_atoi(av[i]);
-			env.a.tab[ac - i - 1].index = ac - i - 1;
-			env.a.tab[ac - i - 1].keep_in_a = 0;
-			++env.a.top;
-			is_doubling_indexed(env.a);
-			--i;
-		}
-		if (env.sdl.is_visu)
-			init_sdl(&env.sdl);
-		merge_sort(env.a.tab, 0, ac - 2, 1);
-		i = 0;
-		while (i < ac - 1)
-		{
-			env.a.tab[i].equiv = i;
-			++i;
-		}	
-		merge_sort(env.a.tab, 0, ac - 2, 0);
-
-		if (is_sorted_indexed_array(env.a.tab, ac - 1))
+		insert_numbers(&env, ac, av);
+		if (is_sorted_indexed_array(env.a.tab, ac - 1 - env.fl))
 			return (0);
 		else
-		{   
-			if (ac - 1 <= 500)
-				env.instrs = complex_sort(&env, 1, ac - 1);
-			// else if (ac - 1 <= 100)
-			// 	env.instrs = complex_sort(&env, 5, ac - 1);
-			// else
-			// 	env.instrs = complex_sort(&env, 11, ac - 1);
-		}
+			numbers_cases(&env, ac - env.fl);
 		while (env.b.top > -1)
-		{
-			env.instrs = add_instr(env.instrs, "pa");
-			manage_indexed_stack(&env.sdl, &env.a, &env.b, "pa");
-		}
-		print_instrs(env.instrs);
+			op_inst(&env, "pa");
+		print_insts(env.insts);
 		if (env.sdl.is_visu)
 			loop_program(&env.sdl);
 		/*miss free*/

@@ -69,6 +69,7 @@ int		ft_strnequ(char const *s1, char const *s2, size_t n);
 int		ft_strequ(char const *s1, char const *s2);
 int		ft_count_words_sep(char const *s, char c);
 int		ft_max(int *tab, unsigned int len);
+int     ft_max_i(int a, int b);
 int		ft_atoi(const char *str);
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);

@@ -19,40 +19,44 @@ int	is_valid_sorted_stack(t_stack a, t_stack b, int a_size)
 	return (is_sorted_array(a.tab, a_size));
 }
 
-int	main(int ac, char **av)
+void	insert_numbers(t_stack *a, t_stack *b, int ac, char **av)
 {
 	int		i;
+
+	i = ac - 1;
+	a->tab = (int *)malloc((ac - 1) * sizeof(int));
+	a->top = -1;
+	b->tab = (int *)malloc((ac - 1) * sizeof(int));
+	b->top = -1;
+	while (i > 0)
+	{
+		is_valid_args(av[i]);
+		a->tab[ac - i - 1] = ft_atoi(av[i]);
+		++a->top;
+		is_doubling(*a);
+		--i;
+	}
+}
+
+int	main(int ac, char **av)
+{
 	char	*line;
 	t_stack	a;
 	t_stack	b;
 
-	i = ac - 1;
 	if (ac < 2)
 		return (0);
 	else
-	{
-		a.tab = (int *)malloc((ac - 1) * sizeof(int));
-		a.top = -1;
-		b.tab = (int *)malloc((ac - 1) * sizeof(int));
-		b.top = -1;
-		while (i > 0)
-		{
-			is_valid_args(av[i]);
-			a.tab[ac - i - 1] = ft_atoi(av[i]);
-			++a.top;
-			is_doubling(a);
-			--i;
-		}
-	}
+		insert_numbers(&a, &b, ac, av);
 	while (get_next_line(0, &line) > 0)
 	{
-		if (is_valid_instruction(line) == 0)
+		if (is_valid_instuction(line) == 0)
 			error("Error");
-		manage_instruction(&a, &b, line);
+		manage_instuction(&a, &b, line);
 	}
 	if (is_valid_sorted_stack(a, b, ac - 1))
-		printf("OK\n");
+		ft_putendl("OK");
 	else
-		printf("KO\n");
+		ft_putendl("KO");
 	return (0);
 }

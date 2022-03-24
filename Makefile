@@ -15,15 +15,23 @@ SRC_PUSH	= 	push_swap.c\
 				error.c\
 				is_int_range.c\
 				manage_indexed_stack.c\
+				operations_indexed_stack.c\
 				is_sorted_array.c\
 				visualisator.c\
+				merge_sort.c\
+				numbers_case.c\
+				stack_edit.c\
+				stack_edit_too.c\
+				complex_sorte.c\
 			
 SRC_CHECKER	=	manage_instruction.c\
 				is_sorted_array.c\
+				operations_stack.c\
 				is_valid_args.c\
 				error.c\
 				is_int_range.c\
 				checker.c\
+				merge_sort.c\
 
 HEADER 	= 	push_swap.h\
 			
@@ -38,10 +46,10 @@ PROG_CHECKER = checker
 
 CFLAGS = -Wall -Wextra -Werror -g
 
-INCLUDE	= -I/Users/$$USER/.brew/Cellar/sdl2/2.0.14_1/include \
+INCLUDE	= -I/Users/$$USER/.brew/Cellar/sdl2/2.0.20/include \
 		-I/Users/$$USER/.brew/Cellar/sdl2_ttf/2.0.15/include
 
-LIB = -L /Users/$$USER/.brew/Cellar/sdl2/2.0.14_1/lib \
+LIB = -L /Users/$$USER/.brew/Cellar/sdl2/2.0.20/lib \
 		-L /Users/$$USER/.brew/Cellar/sdl2_ttf/2.0.15/lib
 
 SDL = `sdl2-config --cflags --libs` -lSDL2 -lSDL2_ttf
@@ -70,11 +78,11 @@ $(LIBFT_LIB): force
 force:
 
 $(PROG_PUSH) : $(LIBFT_LIB) $(OBJ_PUSH)
-	@gcc $(OBJ_PUSH) $(CFLAGS) -o $(PROG_PUSH) $(INCLUDE) $(LIB)  $(SDL) $(LIBFT_LIB)
+	@gcc $(OBJ_PUSH) $(CFLAGS) -o $(PROG_PUSH) $(INCLUDE) $(LIB) $(LIBFT_LIB) $(SDL)
 	@echo "\033[92mDone for push_swap\033[0m"
 
 $(PROG_CHECKER) : $(LIBFT_LIB) $(OBJ_CHECKER)
-	@gcc $(OBJ_CHECKER) $(CFLAGS) -o $(PROG_CHECKER) $(INCLUDE) $(LIB)  $(SDL) $(LIBFT_LIB)
+	@gcc $(OBJ_CHECKER) $(CFLAGS) -o $(PROG_CHECKER) $(INCLUDE) $(LIB) $(LIBFT_LIB)
 	@echo "\033[92mDone for checker\033[0m"
 
 
