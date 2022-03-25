@@ -14,6 +14,6 @@
 
 void	error(char *msg)
 {
-	printf("%s\n", msg);
+	ft_putendl(msg);
 	exit(1);
 }

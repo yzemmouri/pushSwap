@@ -12,9 +12,9 @@
 
 #include "libft.h"
 
-static int		ft_is_there(char *str, char c)
+static int	ft_is_there(char *str, char c)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (str[i])
@@ -26,11 +26,11 @@ static int		ft_is_there(char *str, char c)
 	return (0);
 }
 
-static int		ft_copy(char **str, char **line)
+static int	ft_copy(char **str, char **line)
 {
-	int			i;
-	char		*ptr;
-	char		*tmp;
+	int		i;
+	char	*ptr;
+	char	*tmp;
 
 	i = 0;
 	ptr = *str;
@@ -48,30 +48,31 @@ static int		ft_copy(char **str, char **line)
 	return (1);
 }
 
-int				get_next_line(const int fd, char **line)
+int	get_next_line(const int fd, char **line)
 {
-	char		buff[BUFF_SIZE + 1];
-	char		*ptr;
-	static char	*str[4864];
-	int			ret;
+	t_get_next_line_vars	v;
 
-	if (fd < 0 || fd > 4864 || read(fd, buff, 0) < 0)
+	if (fd < 0 || fd > 4864 || read(fd, v.buff, 0) < 0)
 		return (-1);
-	(!str[fd]) ? str[fd] = ft_strnew(0) : str[fd];
-	while (!ft_is_there(str[fd], '\n') && (ret = read(fd, buff, BUFF_SIZE)) > 0)
+	if (!v.str[fd])
+		v.str[fd] = ft_strnew(0);
+	while (!ft_is_there(v.str[fd], '\n'))
 	{
-		buff[ret] = '\0';
-		ptr = str[fd];
-		str[fd] = ft_strjoin(str[fd], buff);
-		ft_strdel(&ptr);
-		if (ft_is_there(str[fd], '\n') || ret < BUFF_SIZE)
+		v.ret = read(fd, v.buff, BUFF_SIZE);
+		if (v.ret <= 0)
+			break ;
+		v.buff[v.ret] = '\0';
+		v.ptr = v.str[fd];
+		v.str[fd] = ft_strjoin(v.str[fd], v.buff);
+		ft_strdel(&v.ptr);
+		if (ft_is_there(v.str[fd], '\n') || v.ret < BUFF_SIZE)
 			break ;
 	}
-	if (ret <= 0 && !*str[fd])
+	if (v.ret <= 0 && !*v.str[fd])
 	{
-		if (ret < 0)
-			ft_strdel(&str[fd]);
-		return (ret);
+		if (v.ret < 0)
+			ft_strdel(&v.str[fd]);
+		return (v.ret);
 	}
-	return (ft_copy(&str[fd], line));
+	return (ft_copy(&v.str[fd], line));
 }

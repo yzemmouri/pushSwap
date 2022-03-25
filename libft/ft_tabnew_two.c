@@ -12,17 +12,19 @@
 
 #include "libft.h"
 
-int		**ft_tabnew_two(size_t x, size_t y)
+int	**ft_tabnew_two(size_t x, size_t y)
 {
 	size_t	i;
 	int		**tab;
 
 	i = 0;
-	if (!(tab = (int**)malloc(sizeof(tab) * y)))
+	tab = (int **)malloc(sizeof(tab) * y);
+	if (!tab)
 		return (NULL);
 	while (i < y)
 	{
-		if (!(tab[i] = (int*)malloc(sizeof(int) * x)))
+		tab[i] = (int *)malloc(sizeof(int) * x);
+		if (!tab[i])
 			return (NULL);
 		i++;
 	}

@@ -83,7 +83,7 @@ $(PROG_PUSH) : $(LIBFT_LIB) $(OBJ_PUSH)
 	@echo "\033[92mDone for push_swap\033[0m"
 
 $(PROG_CHECKER) : $(LIBFT_LIB) $(OBJ_CHECKER)
-	@gcc $(OBJ_CHECKER) $(CFLAGS) -o $(PROG_CHECKER) $(INCLUDE) $(LIB) $(LIBFT_LIB)
+	@gcc $(OBJ_CHECKER) $(CFLAGS) -o $(PROG_CHECKER) $(INCLUDE) $(LIB) $(LIBFT_LIB) $(SDL)
 	@echo "\033[92mDone for checker\033[0m"
 
 

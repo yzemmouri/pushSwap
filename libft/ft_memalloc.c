@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
-void		*ft_memalloc(size_t size)
+void	*ft_memalloc(size_t size)
 {
 	char	*str;
 	size_t	i;
@@ -20,7 +20,8 @@ void		*ft_memalloc(size_t size)
 	i = 0;
 	if (size == 0 || size > 65535)
 		return (NULL);
-	if (!(str = (char *)malloc(sizeof(char) * size)))
+	str = (char *)malloc(sizeof(char) * size);
+	if (!str)
 		return (NULL);
 	while (i < size)
 	{

@@ -23,9 +23,17 @@
 
 typedef struct s_vals
 {
-    int a;
-    int b;
-}   t_vals;
+	int			a;
+	int			b;
+}	t_vals;
+
+typedef struct s_get_next_line_vars
+{
+	char		buff[BUFF_SIZE + 1];
+	char		*ptr;
+	char		*str[4864];
+	int			ret;
+}	t_get_next_line_vars;
 
 size_t	ft_strlcat(char *dst, const char *src, size_t size);
 size_t	ft_strlen(const char *s);
@@ -44,6 +52,7 @@ void	ft_putnbr_fd(int n, int fd);
 void	ft_putstr_fd(char const *s, int fd);
 void	ft_bzero(void *s, size_t n_bytes);
 void	ft_striteri(char *s, void (*f)(unsigned int, char *));
+char	*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 void	ft_striter(char *s, void (*f)(char *));
 void	*ft_memccpy(void *dst, const void *src, int c, size_t n);
 void	*ft_memchr(const void *s, int c, size_t n);
@@ -58,7 +67,6 @@ char	*ft_strdup(const char *s1);
 char	*ft_itoa(int n);
 char	*ft_strnew(size_t size);
 char	*ft_strjoin(char const *s1, char const *s2);
-char	*ft_strmapi(char const *s, char(*f)(unsigned int, char));
 char	*ft_strncat(char *s1, const char *s2, size_t n);
 char	*ft_strncpy(char *dst, const char *src, size_t len);
 char	*ft_strsub(char const *s, unsigned int start, size_t len);
@@ -75,7 +83,7 @@ int		ft_strnequ(char const *s1, char const *s2, size_t n);
 int		ft_strequ(char const *s1, char const *s2);
 int		ft_count_words_sep(char const *s, char c);
 int		ft_max(int *tab, unsigned int len);
-int     ft_max_i(int a, int b);
+int		ft_max_i(int a, int b);
 int		ft_atoi(const char *str);
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);
@@ -85,6 +93,6 @@ int		ft_isprint(int c);
 int		ft_toupper(int c);
 int		ft_tolower(int c);
 int		get_next_line(const int fd, char **line);
-void    ft_swap(int *elem1, int *elem2);
+void	ft_swap(int *elem1, int *elem2);
 
 #endif

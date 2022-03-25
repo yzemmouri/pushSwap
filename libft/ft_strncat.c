@@ -20,7 +20,7 @@ char	*ft_strncat(char *s1, const char *s2, size_t n)
 
 	i = 0;
 	j = 0;
-	p_s2 = (char*)s2;
+	p_s2 = (char *)s2;
 	while (s1[i] != '\0')
 	{
 		i++;

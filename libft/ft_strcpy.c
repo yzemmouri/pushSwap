@@ -16,7 +16,7 @@ char	*ft_strcpy(char *dst, const char *src)
 	char	*p_src;
 
 	i = 0;
-	p_src = (char*)src;
+	p_src = (char *)src;
 	while (p_src[i] != '\0')
 	{
 		dst[i] = p_src[i];
