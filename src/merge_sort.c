@@ -82,6 +82,8 @@ void	merge(t_indexed_value *stack, t_merge_param merge_par, int by_val)
 		t.k++;
 	}
 	merge_insert(stack, t, l, r);
+	free(l);
+	free(r);
 }
 
 void	merge_sort(t_indexed_value *stack, int l, int r, int by_val)

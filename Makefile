@@ -18,6 +18,7 @@ SRC_PUSH	= 	push_swap.c\
 				operations_indexed_stack.c\
 				is_sorted_array.c\
 				visualisator.c\
+				visual_tools.c\
 				merge_sort.c\
 				numbers_case.c\
 				stack_edit.c\

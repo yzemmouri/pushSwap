@@ -18,7 +18,7 @@ void	ft_bzero(void *s, size_t n_bytes)
 	char	*p_mem;
 
 	i = 0;
-	p_mem = (char*)s;
+	p_mem = (char *)s;
 	while (i < n_bytes)
 	{
 		p_mem[i] = 0;

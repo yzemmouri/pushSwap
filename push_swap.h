@@ -79,7 +79,6 @@ typedef struct s_env
 	t_indexed_stack			a;
 	t_indexed_stack			b;
 	t_inst					*insts;
-	t_inst					*inst_index;
 	t_sdl					sdl;
 	int						temp;
 	int						n;
@@ -158,10 +157,9 @@ void		draw(t_sdl *data, t_indexed_stack a, t_indexed_stack b);
 char		is_option_activated(char option, int option_index);
 t_inst		*fusion(t_inst *insts, t_inst *insts_a, t_inst *insts_b);
 t_inst		*complex_sort(t_env *env);
-int			five_max_min(t_indexed_stack s, int num);
-// void		sdl_error(char *message);
-// int			convert_range(int n, t_range old, t_range new);
-// void		event_listner(void);
-// uint32_t	rgb(double ratio);
+void		sdl_error(char *message);
+int			convert_range(int n, t_range old, t_range new);
+void		event_listner(void);
+uint32_t	rgb(double ratio);
 t_inst		*free_insts(t_inst *insts);
 #endif

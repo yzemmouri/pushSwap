@@ -12,17 +12,11 @@
 
 #include "../push_swap.h"
 
-// 4 3 2 1 5
-// 4 3 5 2 1
-// 1 2 5
-// 3 4
-int	five_max_min(t_indexed_stack s, int num)
+void	free_all(t_env *env)
 {
-	if (s.tab[0].value < num)
-		return (1);
-	if (s.tab[s.top - 1].value > num)
-		return (-1);
-	return (0);
+	free(env->a.tab);
+	free(env->b.tab);
+	free_insts(env->insts);
 }
 
 void	insert_numbers(t_env *env, int ac, char **av)
@@ -108,7 +102,7 @@ int	main(int ac, char **av)
 		print_insts(env.insts);
 		if (env.sdl.is_visu)
 			loop_program(&env.sdl);
-		/*miss free*/
+		free_all(&env);
 	}
 	return (0);
 }

@@ -24,31 +24,31 @@ static	char	*ft_print(int i, int p, int c, char *str)
 	return (str);
 }
 
-char			*ft_itoa(int n)
+char	*ft_itoa(int n)
 {
-	int		i;
-	int		p;
+	t_vals	v;
 	int		c;
 	char	*str;
 
-	i = 1;
+	v.a = 1;
 	c = n;
 	if (n == -2147483648)
 		return (ft_strdup("-2147483648"));
 	if (n < 0)
 	{
-		i++;
+		v.a++;
 		n = -n;
 	}
-	p = n;
+	v.b = n;
 	while (n >= 10)
 	{
 		n = n / 10;
-		i++;
+		v.a++;
 	}
-	if (!(str = (char*)malloc((i + 1) * sizeof(char))))
+	str = (char *)malloc((v.a + 1) * sizeof(char));
+	if (!str)
 		return (NULL);
-	str[i] = '\0';
-	ft_print(i, p, c, str);
+	str[v.a] = '\0';
+	ft_print(v.a, v.b, c, str);
 	return (str);
 }

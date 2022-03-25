@@ -58,5 +58,7 @@ int	main(int ac, char **av)
 		ft_putendl("OK");
 	else
 		ft_putendl("KO");
+	free(a.tab);
+	free(b.tab);
 	return (0);
 }

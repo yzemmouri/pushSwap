@@ -21,6 +21,12 @@
 # include <sys/stat.h>
 # include <fcntl.h>
 
+typedef struct s_vals
+{
+    int a;
+    int b;
+}   t_vals;
+
 size_t	ft_strlcat(char *dst, const char *src, size_t size);
 size_t	ft_strlen(const char *s);
 void	ft_putendl(char const *s);
